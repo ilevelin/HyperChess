@@ -1,0 +1,24 @@
+<piece>
+  <metadata>
+    <ID></ID>
+    <name></name>
+    <version></version>
+    <author></author>
+    <boardType></boardType>
+  </metadata>
+  
+  <moves>
+    <infinite type="">
+      
+    </infinite>
+    <finite type="">
+      
+    </finite>
+    <jump type="">
+      
+    </jump>
+    <infinitejump type="">
+      
+    </infinitejump>
+  </moves>
+</piece>

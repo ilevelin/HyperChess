@@ -1,0 +1,33 @@
+<board>
+  <metadata>
+    <name></name>
+    <version></version>
+    <author></author>
+    <boardType></boardType>
+  </metadata>
+
+  <players>
+    <player>
+      <team></team>
+      <color></color>
+      <direction></direction>
+    </player>
+  </players>
+
+  <pieces>
+    <piece type="">
+      <ID></ID>
+      <value></value>
+      <char></char>
+    </piece>
+  </pieces>
+
+  <position>
+    <row></row>
+    <row></row>
+  </position>
+
+  <specials>
+    <!-- Tengo que pensar como hacer los especiales todabia... -->
+  </specials>
+</board>
