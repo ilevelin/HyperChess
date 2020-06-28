@@ -6,20 +6,32 @@ using Cinemachine;
 public class BoardGenerator2DSquare : MonoBehaviour
 {
 
-    [SerializeField] int boardHeigth = 1, boardWidth = 1;
-    [SerializeField] GameObject boardParent, gameCamera, cellPrefab;
+    private int boardHeigth = 1, boardWidth = 1;
+    [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector;
     [SerializeField] Color cellFirstColor, cellSecondColor;
+    int[][] board = new int[][] {
+        new int[] {0, -1, 0, 0},
+        new int[] {0, 0, 0, 0},
+        new int[] {0, 0, 0, 0},
+        new int[] {-1, 0, 0, -1},
+    };
 
     void Start()
     {
-        
+
+        boardHeigth = board.Length;
+        boardWidth = board[0].Length;
+
         for (int i = 0; i < boardWidth; i++) for (int j = 0; j < boardHeigth; j++)
         {
+            if (board[boardHeigth-1-j][i] != -1) { 
+                GameObject tmp = GameObject.Instantiate(cellPrefab, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0), boardParent.transform);
 
-            GameObject tmp = GameObject.Instantiate(cellPrefab, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0), boardParent.transform);
-            
-            if (((i + j) % 2) == 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
-            else tmp.GetComponent<SpriteRenderer>().color = cellSecondColor;
+                if (((i + j) % 2) == 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
+                else tmp.GetComponent<SpriteRenderer>().color = cellSecondColor;
+
+                tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { j , i });
+            }
 
         }
         
