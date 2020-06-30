@@ -24,9 +24,14 @@ public class CellInputDetector : MonoBehaviour
         board.Release();
     }
 
-    private void OnMouseEnter()
+    private void OnMouseOver()
     {
         board.MouseCell(cellCoords);
+    }
+
+    private void OnMouseExit()
+    {
+        board.MouseCell(new int[] { -1, -1 });
     }
 
 }

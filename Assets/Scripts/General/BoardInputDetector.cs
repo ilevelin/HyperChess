@@ -9,20 +9,41 @@ public class BoardInputDetector : MonoBehaviour
     int[] releaseCoords = null;
     int[] selectedCell = null;
     int[] mouseLocation = null;
-    
+    [SerializeField] GameObject selectedCellObject;
+    Piece[][] board = new Piece[][] {
+        new Piece[8],
+        new Piece[8],
+        new Piece[8],
+        new Piece[8],
+        new Piece[8],
+        new Piece[8],
+        new Piece[8],
+        new Piece[8]
+    };
+
+    private void Update()
+    {
+        if (selectedCellObject != null)
+        {
+            if (selectedCell == null)
+                selectedCellObject.transform.position = new Vector3(-100, -100);
+            else
+                selectedCellObject.transform.position = new Vector3(selectedCell[0], selectedCell[1]);
+        }
+    }
+
+    public void PieceSubscription(int[] location, Piece piece)
+    {
+        board[location[0]][location[1]] = piece;
+    }
+
     public void Press()
     {
         pressCoords = mouseLocation;
-
-        string logText = "Press detected: (";
-        for (int i = 0; i < mouseLocation.Length; i++)
+        if (board[pressCoords[0]][pressCoords[1]] != null)
         {
-            logText = logText + mouseLocation[i];
-            if (i + 1 != mouseLocation.Length) logText = logText + ",";
+            board[pressCoords[0]][pressCoords[1]].Catched();
         }
-        logText = logText + ")";
-
-        Debug.Log(logText);
     }
 
     public void MouseCell(int[] cellCoords)
@@ -34,63 +55,64 @@ public class BoardInputDetector : MonoBehaviour
     {
         releaseCoords = mouseLocation;
 
-        string logText = "Release detected: (";
-        for (int i = 0; i < mouseLocation.Length; i++)
+        if (board[pressCoords[0]][pressCoords[1]] != null)
         {
-            logText = logText + mouseLocation[i];
-            if (i + 1 != mouseLocation.Length) logText = logText + ",";
+            board[pressCoords[0]][pressCoords[1]].Released();
         }
-        logText = logText + ")";
 
-        Debug.Log(logText);
-
-        if (pressCoords.Length == releaseCoords.Length)
+        if (releaseCoords[0] != -1)
         {
-            bool tmp = true;
-            for (int i = 0; i < pressCoords.Length; i++) if (pressCoords[i] != releaseCoords[i]) tmp = false;
-
-            if (tmp)
+            if (pressCoords.Length == releaseCoords.Length)
             {
-                if (selectedCell == null) {
-                    selectedCell = pressCoords;
-                    Debug.Log("Awaiting new click");
+                bool isClick = true;
+                for (int i = 0; i < pressCoords.Length; i++) if (pressCoords[i] != releaseCoords[i]) isClick = false;
+
+                if (isClick)
+                {
+                    if (selectedCell == null)
+                    {
+
+                        selectedCell = pressCoords;
+                    }
+                    else
+                    {
+                        bool isSameCell = true;
+                        for (int i = 0; i < pressCoords.Length; i++) if (pressCoords[i] != selectedCell[i]) isSameCell = false;
+
+                        if (!isSameCell)
+                        {
+                            MovePiece(selectedCell, pressCoords);
+                        }
+                        selectedCell = null;
+                    }
+
                 }
                 else
                 {
-                    MovePiece(selectedCell, pressCoords);
+                    MovePiece(pressCoords, releaseCoords);
                     selectedCell = null;
                 }
 
+                pressCoords = null;
+                releaseCoords = null;
             }
-            else
-            {
-                MovePiece(pressCoords, releaseCoords);
-                selectedCell = null;
-            }
-
-            pressCoords = null;
-            releaseCoords = null;
         }
     }
 
 
     void MovePiece(int[] from, int[] to)
     {
-        string logText = "Move detected: (";
-        for (int i = 0; i < from.Length; i++)
+        if (board[to[0]][to[1]] != null)
         {
-            logText = logText + from[i];
-            if (i + 1 != from.Length) logText = logText + ",";
+            board[to[0]][to[1]].Captured();
         }
-        logText = logText + ") -> (";
-        for (int i = 0; i < to.Length; i++)
-        {
-            logText = logText + to[i];
-            if (i + 1 != to.Length) logText = logText + ",";
-        }
-        logText = logText + ")";
 
-        Debug.Log(logText);
+        if (board[from[0]][from[1]] != null)
+        {
+            board[from[0]][from[1]].MoveTo(to);
+            board[to[0]][to[1]] = board[from[0]][from[1]];
+            board[from[0]][from[1]] = null;
+        }
     }
 
 }

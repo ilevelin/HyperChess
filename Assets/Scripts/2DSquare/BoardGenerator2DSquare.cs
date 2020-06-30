@@ -7,13 +7,17 @@ public class BoardGenerator2DSquare : MonoBehaviour
 {
 
     private int boardHeigth = 1, boardWidth = 1;
-    [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector;
+    [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, samplePiece;
     [SerializeField] Color cellFirstColor, cellSecondColor;
     int[][] board = new int[][] {
-        new int[] {0, -1, 0, 0},
-        new int[] {0, 0, 0, 0},
-        new int[] {0, 0, 0, 0},
-        new int[] {-1, 0, 0, -1},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {0, 0, 0, -1, -1, 0, 0, 0},
+        new int[] {0, 0, 0, -1, -1, 0, 0, 0},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {1, 0, 0, 0, 0, 0, 0, 1},
     };
 
     void Start()
@@ -24,13 +28,20 @@ public class BoardGenerator2DSquare : MonoBehaviour
 
         for (int i = 0; i < boardWidth; i++) for (int j = 0; j < boardHeigth; j++)
         {
-            if (board[boardHeigth-1-j][i] != -1) { 
+            if (board[i][j] != -1) { 
                 GameObject tmp = GameObject.Instantiate(cellPrefab, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0), boardParent.transform);
 
                 if (((i + j) % 2) == 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
                 else tmp.GetComponent<SpriteRenderer>().color = cellSecondColor;
 
-                tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { j , i });
+                tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { i , j });
+
+                if (board[boardHeigth-1-j][i] != 0)
+                {
+                    tmp = GameObject.Instantiate(samplePiece, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0));
+                    tmp.GetComponent<Piece>().Initialize(new int[] { i, j }, boardInputDetector);
+                }
+
             }
 
         }
