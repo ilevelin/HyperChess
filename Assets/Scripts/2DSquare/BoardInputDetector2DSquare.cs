@@ -3,22 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardInputDetector : MonoBehaviour
+public class BoardInputDetector2DSquare : MonoBehaviour
 {
     int[] pressCoords = null;
     int[] releaseCoords = null;
     int[] selectedCell = null;
     int[] mouseLocation = null;
     [SerializeField] GameObject selectedCellObject;
-    Piece[][] board = new Piece[][] {
-        new Piece[8],
-        new Piece[8],
-        new Piece[8],
-        new Piece[8],
-        new Piece[8],
-        new Piece[8],
-        new Piece[8],
-        new Piece[8]
+    Piece2DSquare[][] board = new Piece2DSquare[][] {
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8],
+        new Piece2DSquare[8]
     };
 
     private void Update()
@@ -32,7 +32,7 @@ public class BoardInputDetector : MonoBehaviour
         }
     }
 
-    public void PieceSubscription(int[] location, Piece piece)
+    public void PieceSubscription(int[] location, Piece2DSquare piece)
     {
         board[location[0]][location[1]] = piece;
     }
