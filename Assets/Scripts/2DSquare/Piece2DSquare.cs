@@ -18,12 +18,13 @@ public class Piece2DSquare : MonoBehaviour
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject inputDetector, int owner, int ownerTeam)
+    public void Initialize(int[] initialPosition, GameObject inputDetector, int owner, int ownerTeam, Color ownerColor)
     {
         position = initialPosition;
-        inputDetector.GetComponent<BoardInputDetector2DSquare>().PieceSubscription(initialPosition, this);
+        inputDetector.GetComponent<BoardInputDetector>().PieceSubscription(initialPosition, this);
         player = owner;
         team = ownerTeam;
+        GetComponent<SpriteRenderer>().color = ownerColor;
         RenderPiece();
     }
 

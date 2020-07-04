@@ -10,14 +10,14 @@ public class BoardGenerator2DSquare : MonoBehaviour
     [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, samplePiece;
     [SerializeField] Color cellFirstColor, cellSecondColor;
     int[][] board = new int[][] {
-        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
-        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 2},
+        new int[] {2, 0, 0, 0, 0, 0, 0, 0},
         new int[] {0, 0, 0, 0, 0, 0, 0, 0},
         new int[] {0, 0, 0, -1, -1, 0, 0, 0},
         new int[] {0, 0, 0, -1, -1, 0, 0, 0},
         new int[] {0, 0, 0, 0, 0, 0, 0, 0},
-        new int[] {0, 0, 0, 0, 0, 0, 0, 0},
-        new int[] {1, 0, 0, 0, 0, 0, 0, 1},
+        new int[] {0, 0, 0, 0, 0, 0, 0, 1},
+        new int[] {1, 0, 0, 0, 0, 0, 0, 0},
     };
 
     void Start()
@@ -80,7 +80,10 @@ public class BoardGenerator2DSquare : MonoBehaviour
                     if (board[boardHeight - 1 - j][i] != 0)
                     {
                         tmp = GameObject.Instantiate(samplePiece, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0));
-                        tmp.GetComponent<Piece>().Initialize(new int[] { i, j }, boardInputDetector);
+                        Color tmpColor;
+                        if (board[boardHeight - 1 - j][i] == 1) tmpColor = new Color(1.0f, 0.5f, 0.5f);
+                        else tmpColor = new Color(0.5f, 0.5f, 1.0f);
+                        tmp.GetComponent<Piece2DSquare>().Initialize(new int[] { i, j }, boardInputDetector, board[boardHeight - 1 - j][i], board[boardHeight - 1 - j][i]+100, tmpColor);
                     }
 
                 }

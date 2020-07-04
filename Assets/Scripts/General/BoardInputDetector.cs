@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardInputDetector2DSquare : MonoBehaviour
+public class BoardInputDetector : MonoBehaviour
 {
     int[] pressCoords = null;
     int[] releaseCoords = null;
