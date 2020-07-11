@@ -185,6 +185,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 8837195185387404078, guid: 603c4bf1125a3f54799d685aaf5d8e38,
     type: 3}
   boardInputDetector: {fileID: 1176291578}
+  boardCoordinator: {fileID: 1012686930}
   samplePiece: {fileID: 2726288517820817603, guid: 6b1f5ba922b9cf14b9f771a5f86cb1b5,
     type: 3}
   cellFirstColor: {r: 1, g: 1, b: 1, a: 1}
@@ -233,9 +234,58 @@ Transform:
   - {fileID: 164829994}
   - {fileID: 1176291579}
   - {fileID: 1176063065}
+  - {fileID: 1012686931}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1012686930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1012686931}
+  - component: {fileID: 1012686932}
+  m_Layer: 0
+  m_Name: BoardCoordinator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1012686931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012686930}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1001555268}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1012686932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012686930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999059a29a3f5444a8d0af0b7439f899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedCellObject: {fileID: 1176063064}
+  arrowMarkerPrefab: {fileID: 4116109970653635780, guid: 09a7294daa0ddf74faba4cb692528d95,
+    type: 3}
+  circleMarkerPrefab: {fileID: 4513978438401185725, guid: 70506559da26a89478703184001fa6ad,
+    type: 3}
 --- !u!1 &1176063064
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ef364c21a5d5e347ba2abc3180b2954, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedCellObject: {fileID: 1176063064}
+  boardCoordinator: {fileID: 1012686930}
 --- !u!1 &1291255035
 GameObject:
   m_ObjectHideFlags: 0

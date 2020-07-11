@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Piece2DSquare : MonoBehaviour
+public class Piece2DSquare : MonoBehaviour, Piece
 {
 
     int[] position = null;
@@ -18,74 +19,237 @@ public class Piece2DSquare : MonoBehaviour
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject inputDetector, int owner, int ownerTeam, Color ownerColor)
+    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves)
     {
         position = initialPosition;
-        inputDetector.GetComponent<BoardInputDetector>().PieceSubscription(initialPosition, this);
+        coordinator.GetComponent<BoardCoordinator>().PieceSubscription(initialPosition, this);
         player = owner;
         team = ownerTeam;
         GetComponent<SpriteRenderer>().color = ownerColor;
+        moves = pieceMoves;
         RenderPiece();
     }
 
-    public void checkMoves(Piece2DSquare[][] board)
+    public void CheckMoves(Piece2DSquare[][] board)
     {
         avaliableMoves.Clear();
         foreach (Move move in moves)
         {
-            Piece2DSquare objectiveCell = board[position[0] + move.move[0]][position[1] + move.move[1]];
-            switch (move.style)
+            int x = position[0] + move.move[0];
+            int y = position[1] + move.move[1];
+            if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
             {
-                case Style.FINITE:
-                    switch (move.type)
-                    {
-                        case Type.BOTH:
-                            break;
-                        case Type.CAPTURE:
-                            break;
-                        case Type.MOVE:
-                            break;
-                    }
-                    break;
+                Piece2DSquare objectiveCell = board[x][y];
+                switch (move.style)
+                {
+                    case Style.FINITE:
+                        int minorAxis = 0;
+                        if (Math.Abs(move.move[1]) < Math.Abs(move.move[0]))
+                            minorAxis = 1;
+                        int mayorAxis = 1 - minorAxis;
 
-                case Style.INFINITE:
-                    switch (move.type)
-                    {
-                        case Type.BOTH:
-                            break;
-                        case Type.CAPTURE:
-                            break;
-                        case Type.MOVE:
-                            break;
-                    }
-                    break;
+                        bool blocked = false;
+                        if (move.move[minorAxis] != 0)
+                        {
+                            for (int i = 1; i < Math.Abs(move.move[minorAxis]) && !blocked; i++)
+                                if ((move.move[mayorAxis] * i) % move.move[minorAxis] == 0)
+                                {
+                                    int tmpX = position[0] + ((move.move[0] / Math.Abs(move.move[minorAxis])) * i);
+                                    int tmpY = position[1] + ((move.move[1] / Math.Abs(move.move[minorAxis])) * i);
+                                    if (!(board[tmpX][tmpY] is null))
+                                    {
+                                        blocked = true;
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            for (int i = 1; i < Math.Abs(move.move[mayorAxis]) && !blocked; i++)
+                            {
+                                int tmpX = i + position[0];
+                                int tmpY = i + position[1];
+                                if (!(board[tmpX][tmpY] is null))
+                                {
+                                    blocked = true;
+                                }
 
-                case Style.INFINITEJUMP:
-                    switch (move.type)
-                    {
-                        case Type.BOTH:
-                            break;
-                        case Type.CAPTURE:
-                            break;
-                        case Type.MOVE:
-                            break;
-                    }
-                    break;
+                            }
+                        }
 
-                case Style.JUMP:
-                    switch (move.type)
-                    {
-                        case Type.BOTH:
-                            if (objectiveCell.team != this.team) avaliableMoves.Add(new int[] { position[0] + move.move[0], position[1] + move.move[1] });
-                            break;
-                        case Type.CAPTURE:
-                            if (objectiveCell != null) if (objectiveCell.team != this.team) avaliableMoves.Add(new int[] { position[0] + move.move[0], position[1] + move.move[1] });
-                            break;
-                        case Type.MOVE:
-                            if (objectiveCell == null) avaliableMoves.Add(new int[] { position[0] + move.move[0], position[1] + move.move[1] });
-                            break;
-                    }
-                    break;
+                        if (!blocked)
+                            switch (move.type)
+                            {
+                                case Type.BOTH:
+                                    if ((objectiveCell == null) || (objectiveCell.team != this.team))
+                                        avaliableMoves.Add(new int[] { x, y });
+                                    break;
+                                case Type.CAPTURE:
+                                    if (objectiveCell != null) if (objectiveCell.team != this.team)
+                                            avaliableMoves.Add(new int[] { x, y });
+                                    break;
+                                case Type.MOVE:
+                                    if (objectiveCell == null)
+                                        avaliableMoves.Add(new int[] { x, y });
+                                    break;
+                            }
+                        break;
+
+                    case Style.INFINITE:
+                        int minorAxis1 = 0;
+                        if (Math.Abs(move.move[1]) < Math.Abs(move.move[0]))
+                            minorAxis1 = 1;
+                        int mayorAxis1 = 1 - minorAxis1;
+
+                        int[] tmpPosition2 = position;
+                        bool possible2 = true;
+
+                        while (possible2)
+                        {
+                            bool blocked1 = false;
+                            if (move.move[minorAxis1] != 0)
+                            {
+                                for (int i = 1; i < Math.Abs(move.move[minorAxis1]) && !blocked1; i++)
+                                    if ((move.move[mayorAxis1] * i) % move.move[minorAxis1] == 0)
+                                    {
+                                        int tmpX = tmpPosition2[0] + ((move.move[0] / Math.Abs(move.move[minorAxis1])) * i);
+                                        int tmpY = tmpPosition2[1] + ((move.move[1] / Math.Abs(move.move[minorAxis1])) * i);
+                                        if (!(board[tmpX][tmpY] is null))
+                                        {
+                                            blocked1 = true;
+                                        }
+                                    }
+                            }
+                            else
+                            {
+                                for (int i = 1; i < Math.Abs(move.move[mayorAxis1]) && !blocked1; i++)
+                                {
+                                    int tmpX = tmpPosition2[0] + i;
+                                    int tmpY = tmpPosition2[1] + i;
+                                    if (!(board[tmpX][tmpY] is null))
+                                    {
+                                        blocked1 = true;
+                                    }
+
+                                }
+                            }
+
+                            if (!blocked1)
+                            {
+                                switch (move.type)
+                                {
+                                    case Type.BOTH:
+                                        if (objectiveCell == null)
+                                            avaliableMoves.Add(new int[] { x, y });
+                                        else if (objectiveCell.team != this.team)
+                                        {
+                                            avaliableMoves.Add(new int[] { x, y });
+                                            possible2 = false;
+                                        }
+                                        else
+                                            possible2 = false;
+                                        break;
+                                    case Type.CAPTURE:
+                                        if (objectiveCell != null) if (objectiveCell.team != this.team)
+                                                avaliableMoves.Add(new int[] { x, y });
+                                            else
+                                                possible2 = false;
+                                        break;
+                                    case Type.MOVE:
+                                        if (objectiveCell == null)
+                                            avaliableMoves.Add(new int[] { x, y });
+                                        else
+                                            possible2 = false;
+                                        break;
+                                }
+                            }
+                            else
+                                possible2 = false;
+
+                            if (possible2 && move.type != Type.CAPTURE)
+                            {
+                                tmpPosition2 = new int[] { x, y };
+                                x = tmpPosition2[0] + move.move[0];
+                                y = tmpPosition2[1] + move.move[1];
+                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
+                                {
+                                    objectiveCell = board[x][y];
+                                }
+                                else
+                                    possible2 = false;
+
+                            }
+                            else
+                                possible2 = false;
+                        }
+                        break;
+
+                    case Style.INFINITEJUMP:
+                        bool possible1 = true;
+                        int[] tmpPosition1 = position;
+                        while (possible1)
+                        {
+                            switch (move.type)
+                            {
+                                case Type.BOTH:
+                                    if (objectiveCell == null)
+                                    {
+                                        avaliableMoves.Add(new int[] { x, y });
+                                    }
+                                    else if (objectiveCell.team != this.team)
+                                    {
+                                        avaliableMoves.Add(new int[] { x, y });
+                                        possible1 = false;
+                                    }
+                                    else
+                                        possible1 = false;
+                                    break;
+                                case Type.CAPTURE:
+                                    if (objectiveCell != null) if (objectiveCell.team != this.team)
+                                        {
+                                            avaliableMoves.Add(new int[] { tmpPosition1[0] + move.move[0], tmpPosition1[1] + move.move[1] });
+                                        }
+                                    break;
+                                case Type.MOVE:
+                                    if (objectiveCell == null)
+                                    {
+                                        avaliableMoves.Add(new int[] { x, y });
+                                    }
+                                    else
+                                        possible1 = false;
+                                    break;
+                            }
+
+                            if (possible1 && move.type != Type.CAPTURE)
+                            {
+                                tmpPosition1 = new int[] { x, y };
+                                x = tmpPosition1[0] + move.move[0];
+                                y = tmpPosition1[1] + move.move[1];
+                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
+                                    objectiveCell = board[x][y];
+                                else
+                                    possible1 = false;
+                            }
+                            else
+                                possible1 = false;
+
+                        }
+                        break;
+
+                    case Style.JUMP:
+                        switch (move.type)
+                        {
+                            case Type.BOTH:
+                                if ((objectiveCell == null) || (objectiveCell.team != this.team)) avaliableMoves.Add(new int[] { x, y });
+                                break;
+                            case Type.CAPTURE:
+                                if (objectiveCell != null) if (objectiveCell.team != this.team) avaliableMoves.Add(new int[] { x, y });
+                                break;
+                            case Type.MOVE:
+                                if (objectiveCell == null) avaliableMoves.Add(new int[] { x, y });
+                                break;
+                        }
+                        break;
+                }
             }
         }
     }
@@ -98,6 +262,7 @@ public class Piece2DSquare : MonoBehaviour
             for (int j = 0; j < newPosition.Length; j++) if (avaliableMoves[i][j] != newPosition[j]) compare = false;
             contains = compare;
         }
+
         if (contains)
         {
             position = newPosition;
@@ -106,6 +271,7 @@ public class Piece2DSquare : MonoBehaviour
         }
         else
         {
+            RenderPiece();
             return false;
         }
     }

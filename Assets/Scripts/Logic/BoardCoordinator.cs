@@ -4,9 +4,15 @@ using UnityEngine;
 
 public interface BoardCoordinator
 {
+    void Initialize(int[] boardSize);
+    void CheckMoves();
 
-    bool Initialize(int[] boardSize);
     void MousePressed(int[] location);
     void MouseReleased(int[] location);
-        
+    void MovePiece(int[] from, int[] to);
+
+    void PieceSubscription(int[] location, Piece piece);
+
+    void RightMousePressed(int[] location);
+    void RightMouseReleased(int[] location);
 }
