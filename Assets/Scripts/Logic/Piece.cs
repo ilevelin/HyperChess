@@ -5,7 +5,7 @@ using UnityEngine;
 public interface Piece
 {
 
-    void Initialize(int[] initialPosition, GameObject inputDetector, int owner, int ownerTeam, Color onwerColor, List<Move> pieceMoves);
+    void Initialize(int[] initialPosition, GameObject inputDetector, int owner, int ownerTeam, Color onwerColor, List<Move> pieceMoves, int val);
     bool MoveTo(int[] newPosition);
     void Captured();
     void Catched();

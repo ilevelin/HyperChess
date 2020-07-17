@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
 {
-    [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab;
+    [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab, playerInterface;
+    PlayerInfoCoordinator interfaceCoordinator;
 
     int[] pressCoords = null;
     int[] releaseCoords = null;
@@ -18,6 +19,11 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
     List<CircleMarker> circleMarkers = new List<CircleMarker>();
 
     Piece2DSquare[][] board;
+
+    private void Start()
+    {
+        interfaceCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
+    }
 
     private void Update()
     {
@@ -37,6 +43,8 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
             board = new Piece2DSquare[boardSize[0]][];
             for (int i = 0; i < board.Length; i++) board[i] = new Piece2DSquare[boardSize[1]];
         }
+
+        playerInterface.GetComponent<PlayerInfoCoordinator>().Initialize(this);
     }
 
     public void CheckMoves()
@@ -200,16 +208,33 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
     {
 
         if (board[from[0]][from[1]] != null)
-        {
-            if (board[from[0]][from[1]].MoveTo(to))
+            if(board[from[0]][from[1]].player == (interfaceCoordinator.turn+1))
             {
-                if (board[to[0]][to[1]] != null)
-                    board[to[0]][to[1]].Captured();
-                board[to[0]][to[1]] = board[from[0]][from[1]];
-                board[from[0]][from[1]] = null;
+                if (board[from[0]][from[1]].MoveTo(to))
+                {
+                    if (board[to[0]][to[1]] != null)
+                        board[to[0]][to[1]].Captured();
+                    board[to[0]][to[1]] = board[from[0]][from[1]];
+                    board[from[0]][from[1]] = null;
 
-                CheckMoves();
+                    interfaceCoordinator.NextTurn(true);
+
+                    CheckMoves();
+                }
             }
-        }
+    }
+
+    public int GetScoreOfPlayer(int i)
+    {
+        int counter = 0;
+
+        foreach (Piece[] row in board)
+            foreach (Piece piece in row)
+                if (!(piece is null))
+                    if (piece is Piece2DSquare)
+                        if (((Piece2DSquare)piece).player == i)
+                            counter += ((Piece2DSquare)piece).value;
+
+        return counter;
     }
 }

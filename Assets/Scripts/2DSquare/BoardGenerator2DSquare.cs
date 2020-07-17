@@ -7,21 +7,26 @@ public class BoardGenerator2DSquare : MonoBehaviour
 {
 
     private int boardHeight = 1, boardWidth = 1;
-    [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, boardCoordinator, samplePiece;
+    [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, boardCoordinator, samplePiece, playerInterface;
     [SerializeField] Color cellFirstColor, cellSecondColor;
-    List<Color> playerColors = new List<Color>() { new Color(1.0f, 0.5f, 0.5f), new Color(0.5f, 0.5f, 1.0f) };
     string[][] board = new string[][] {
         new string[] {"_", "0", "0", "0", "0", "0", "0", "_"},
-        new string[] {"0", "0", "0", "0", "0", "0", "2S", "0"},
-        new string[] {"0", "0", "0", "0", "0", "2S", "0", "0"},
+        new string[] {"0", "0", "0", "0", "0", "0", "3S", "0"},
+        new string[] {"0", "0", "0", "0", "0", "3S", "0", "0"},
         new string[] {"0", "0", "0", "0", "2S", "0", "0", "0"},
-        new string[] {"0", "0", "0", "1S", "0", "0", "0", "0"},
+        new string[] {"0", "0", "0", "2S", "0", "0", "0", "0"},
         new string[] {"0", "0", "1S", "0", "0", "0", "0", "0"},
         new string[] {"0", "1S", "0", "0", "0", "0", "0", "0"},
         new string[] {"_", "0", "0", "0", "0", "0", "0", "_"},
     };
+    List<PlayerInfo> playerList = new List<PlayerInfo>() {
+        new PlayerInfo(1000, 500, 500, "Antonio", new Color(1.0f, 0.0f, 0.0f)),
+        new PlayerInfo(1000, 500, 500, "Bernardo", new Color(0.0f, 0.0f, 1.0f)),
+        new PlayerInfo(1000, 500, 500, "Cristina", new Color(0.0f, 1.0f, 0.0f))
+    };
 
     Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
+    Dictionary<char, int> values = new Dictionary<char, int>();
 
     void Start()
     {
@@ -42,7 +47,12 @@ public class BoardGenerator2DSquare : MonoBehaviour
             new Move(new int[] {-3, 3}, Style.INFINITEJUMP, Type.CAPTURE),
             new Move(new int[] {-3, -3}, Style.INFINITEJUMP, Type.CAPTURE),
         });
+        values.Add('S', 10);
         RenderBoard();
+
+        PlayerInfoCoordinator playerCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
+        foreach(PlayerInfo player in playerList)
+            playerCoordinator.AddPlayer(player);
     }
 
     public void GenerateNewBoard(int height, int width)
@@ -102,10 +112,19 @@ public class BoardGenerator2DSquare : MonoBehaviour
                     if (board[boardHeight - 1 - j][i] != "0")
                     {
                         tmp = GameObject.Instantiate(samplePiece, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0));
-                        Color tmpColor = playerColors[int.Parse(board[boardHeight - 1 - j][i][0].ToString()) - 1];
+                        Color tmpColor = playerList[int.Parse(board[boardHeight - 1 - j][i][0].ToString()) - 1].color;
                         List<Move> pieceMoves;
+                        int pieceValue;
                         pieces.TryGetValue(board[boardHeight - 1 - j][i][1], out pieceMoves);
-                        tmp.GetComponent<Piece2DSquare>().Initialize(new int[] { i, j }, boardCoordinator, board[boardHeight - 1 - j][i][0], board[boardHeight - 1 - j][i][0]+100, tmpColor, pieceMoves);
+                        values.TryGetValue(board[boardHeight - 1 - j][i][1], out pieceValue);
+                        tmp.GetComponent<Piece2DSquare>().Initialize(
+                            new int[] { i, j }, boardCoordinator, 
+                            int.Parse(board[boardHeight - 1 - j][i][0].ToString()), 
+                            int.Parse(board[boardHeight - 1 - j][i][0].ToString())+100, 
+                            tmpColor, 
+                            pieceMoves, 
+                            pieceValue
+                            );
                     }
 
                 }

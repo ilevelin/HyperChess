@@ -7,8 +7,9 @@ public class Piece2DSquare : MonoBehaviour, Piece
 {
 
     int[] position = null;
-    int player;
-    int team;
+    public int player;
+    public int team;
+    public int value;
     bool onHold = false, isSelected = false;
     public List<Move> moves = new List<Move>();
     public List<int[]> avaliableMoves = new List<int[]>();
@@ -19,7 +20,7 @@ public class Piece2DSquare : MonoBehaviour, Piece
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves)
+    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int val)
     {
         position = initialPosition;
         coordinator.GetComponent<BoardCoordinator>().PieceSubscription(initialPosition, this);
@@ -27,6 +28,7 @@ public class Piece2DSquare : MonoBehaviour, Piece
         team = ownerTeam;
         GetComponent<SpriteRenderer>().color = ownerColor;
         moves = pieceMoves;
+        value = val;
         RenderPiece();
     }
 

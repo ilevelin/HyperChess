@@ -15,4 +15,6 @@ public interface BoardCoordinator
 
     void RightMousePressed(int[] location);
     void RightMouseReleased(int[] location);
+
+    int GetScoreOfPlayer(int i);
 }
