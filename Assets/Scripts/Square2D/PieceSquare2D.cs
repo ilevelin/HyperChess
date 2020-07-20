@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Piece2DSquare : MonoBehaviour, Piece
+public class PieceSquare2D : MonoBehaviour, Piece
 {
 
     int[] position = null;
@@ -32,7 +32,7 @@ public class Piece2DSquare : MonoBehaviour, Piece
         RenderPiece();
     }
 
-    public void CheckMoves(Piece2DSquare[][] board)
+    public void CheckMoves(PieceSquare2D[][] board)
     {
         avaliableMoves.Clear();
         foreach (Move move in moves)
@@ -41,7 +41,7 @@ public class Piece2DSquare : MonoBehaviour, Piece
             int y = position[1] + move.move[1];
             if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
             {
-                Piece2DSquare objectiveCell = board[x][y];
+                PieceSquare2D objectiveCell = board[x][y];
                 switch (move.style)
                 {
                     case Style.FINITE:

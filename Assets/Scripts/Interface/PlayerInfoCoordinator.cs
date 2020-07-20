@@ -14,6 +14,8 @@ public class PlayerInfoCoordinator : MonoBehaviour
     public int turn { private set; get; } = 0;
     int delay = 0;
 
+    bool ready = false;
+
     public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color)
     {
         if (players.Count == 0) delay = delayTime;
@@ -46,10 +48,12 @@ public class PlayerInfoCoordinator : MonoBehaviour
     internal void Initialize(BoardCoordinator bc)
     {
         boardCoordinator = bc;
+        ready = true;
     }
 
     void FixedUpdate()
     {
+        if (!ready) return;
         if (players[turn].alive)
         {
             if (delay > 0)
@@ -84,6 +88,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     private void Update()
     {
+        if (!ready) return;
         playerTurnArrow.transform.position = Vector3.Lerp(playerTurnArrow.transform.position, new Vector3(0, (Screen.height) - (10 + (50 * turn))), 0.1f);
         playerTurnArrow.GetComponent<Image>().color = Color.Lerp(playerTurnArrow.GetComponent<Image>().color, players[turn].color, 0.1f);
     }

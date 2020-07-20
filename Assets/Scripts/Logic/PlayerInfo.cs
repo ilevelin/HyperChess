@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerInfo
 {
-    // Tiempos en milisegundos
+    // Times in miliseconds
     public int startingTime, incrementTime, delayTime;
     public string name;
     public Color color;

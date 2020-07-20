@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
+public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 {
     [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab, playerInterface;
     PlayerInfoCoordinator interfaceCoordinator;
@@ -18,7 +18,7 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
     List<ArrowMarker> arrowMarkers = new List<ArrowMarker>();
     List<CircleMarker> circleMarkers = new List<CircleMarker>();
 
-    Piece2DSquare[][] board;
+    PieceSquare2D[][] board;
 
     private void Start()
     {
@@ -40,8 +40,8 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
     {
         if (boardSize.Length != 2) return;
         {
-            board = new Piece2DSquare[boardSize[0]][];
-            for (int i = 0; i < board.Length; i++) board[i] = new Piece2DSquare[boardSize[1]];
+            board = new PieceSquare2D[boardSize[0]][];
+            for (int i = 0; i < board.Length; i++) board[i] = new PieceSquare2D[boardSize[1]];
         }
 
         playerInterface.GetComponent<PlayerInfoCoordinator>().Initialize(this);
@@ -197,7 +197,7 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
 
     public void PieceSubscription(int[] location, Piece piece)
     {
-        if ((location.Length == 2) && (piece is Piece2DSquare newpiece))
+        if ((location.Length == 2) && (piece is PieceSquare2D newpiece))
         {
             board[location[0]][location[1]] = newpiece;
         }
@@ -231,9 +231,9 @@ public class BoardCoordinator2DSquare : MonoBehaviour, BoardCoordinator
         foreach (Piece[] row in board)
             foreach (Piece piece in row)
                 if (!(piece is null))
-                    if (piece is Piece2DSquare)
-                        if (((Piece2DSquare)piece).player == i)
-                            counter += ((Piece2DSquare)piece).value;
+                    if (piece is PieceSquare2D)
+                        if (((PieceSquare2D)piece).player == i)
+                            counter += ((PieceSquare2D)piece).value;
 
         return counter;
     }
