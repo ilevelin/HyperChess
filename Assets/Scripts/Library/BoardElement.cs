@@ -1,39 +1,67 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BoardElement
 {
+    public Sprite image;
+
     public string version;
     public string author;
     public BoardType boardType;
 
-    public List<Player> players;
-    public Dictionary<char, string> pieceIDs;
+    public List<PlayerImport> players;
+    public Dictionary<char, PieceImport> pieceIDs;
     public Board initialState;
     // TODO Añadir Especiales
 
-    public BoardElement(string v, string a, BoardType bt, List<Player> pl, Dictionary<char, string> pi, Board ini)
+    public BoardElement()
     {
-        version = v;
-        author = a;
-        boardType = bt;
-        players = pl;
-        pieceIDs = pi;
-        initialState = ini;
+        image = null;
+        version = null;
+        author = null;
+        boardType = BoardType.NULL;
+
+        players = new List<PlayerImport>();
+        pieceIDs = new Dictionary<char, PieceImport>();
     }
 }
 
-public class Player
+public class PlayerImport
 {
-    int team;
-    Color color;
-    int[] direction;
+    public int? team;
+    public Color? color;
+    public int? direction;
 
-    public Player(int t, Color c, int[] d)
+    public PlayerImport(int t, Color c, int d)
     {
         team = t;
         color = c;
         direction = d;
+    }
+
+    public PlayerImport()
+    {
+        team = null;
+        color = null;
+        direction = null;
+    }
+}
+
+public enum PieceType
+{
+    NONE, PAWN, KING, UPGRADE
+}
+
+public class PieceImport
+{
+    public string ID;
+    public int value;
+    public PieceType type;
+
+    public PieceImport()
+    {
+        ID = null;
+        value = -1;
+        type = PieceType.NONE;
     }
 }

@@ -13,6 +13,8 @@ public class PieceSquare2D : MonoBehaviour, Piece
     bool onHold = false, isSelected = false;
     public List<Move> moves = new List<Move>();
     public List<int[]> avaliableMoves = new List<int[]>();
+    [SerializeField] GameObject possibleMovePrefab;
+    GameObject possibleMoveParent;
 
     private void Update()
     {
@@ -20,26 +22,28 @@ public class PieceSquare2D : MonoBehaviour, Piece
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int val)
+    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int val, Sprite image)
     {
         position = initialPosition;
         coordinator.GetComponent<BoardCoordinator>().PieceSubscription(initialPosition, this);
         player = owner;
         team = ownerTeam;
+        GetComponent<SpriteRenderer>().sprite = image;
         GetComponent<SpriteRenderer>().color = ownerColor;
         moves = pieceMoves;
         value = val;
         RenderPiece();
+        possibleMoveParent = GameObject.FindWithTag("PossibleMoves");
     }
 
-    public void CheckMoves(PieceSquare2D[][] board)
+    public void CheckMoves(PieceSquare2D[][] board, bool[][] existingCells)
     {
         avaliableMoves.Clear();
         foreach (Move move in moves)
         {
             int x = position[0] + move.move[0];
             int y = position[1] + move.move[1];
-            if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
+            if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
             {
                 PieceSquare2D objectiveCell = board[x][y];
                 switch (move.style)
@@ -172,7 +176,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition2 = new int[] { x, y };
                                 x = tmpPosition2[0] + move.move[0];
                                 y = tmpPosition2[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
+                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
                                 {
                                     objectiveCell = board[x][y];
                                 }
@@ -226,7 +230,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition1 = new int[] { x, y };
                                 x = tmpPosition1[0] + move.move[0];
                                 y = tmpPosition1[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length))
+                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
                                     objectiveCell = board[x][y];
                                 else
                                     possible1 = false;
@@ -280,18 +284,37 @@ public class PieceSquare2D : MonoBehaviour, Piece
 
     public void Captured()
     {
+        HideMoves();
         GameObject.Destroy(gameObject);
     }
 
     public void Catched()
     {
         onHold = true;
+        ShowMoves();
     }
 
     public void Released()
     {
         onHold = false;
         RenderPiece();
+    }
+
+    public void ShowMoves()
+    {
+        HideMoves();
+        foreach (int[] move in avaliableMoves)
+        {
+            GameObject.Instantiate(possibleMovePrefab, new Vector3(move[0], move[1]), new Quaternion(), possibleMoveParent.transform);
+        }
+    }
+
+    public void HideMoves()
+    {
+        foreach (Transform child in possibleMoveParent.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
     }
 
     private void RenderPiece()

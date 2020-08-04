@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PieceElement
 {
+    public Sprite image;
+
     public string name;
     public string version;
     public string author;
@@ -11,12 +12,8 @@ public class PieceElement
 
     public List<Move> moves;
 
-    public PieceElement(string n, string v, string a, BoardType bt, List<Move> m)
+    public PieceElement()
     {
-        name = n;
-        version = v;
-        author = a;
-        boardType = bt;
-        moves = m;
+        moves = new List<Move>();
     }
 }

@@ -94,5 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bab5160be6069614e86070ee426092d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveIndicator: {fileID: 791515691377084113, guid: d1ec2eb48bfc3bc45a21ee589e1d7267,
+  player: 0
+  team: 0
+  value: 0
+  possibleMovePrefab: {fileID: 791515691377084113, guid: d1ec2eb48bfc3bc45a21ee589e1d7267,
     type: 3}

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public enum Style
 {
-    INFINITE, FINITE, JUMP, INFINITEJUMP
+    NULL, INFINITE, FINITE, JUMP, INFINITEJUMP
 }
 public enum Type
 {
-    MOVE, CAPTURE, BOTH
+    NULL, MOVE, CAPTURE, BOTH
 }
 
 public class Move
@@ -23,4 +23,6 @@ public class Move
         this.style = style;
         this.type = type;
     }
+
+    public Move() { }
 }

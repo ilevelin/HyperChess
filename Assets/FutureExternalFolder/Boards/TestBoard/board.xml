@@ -1,0 +1,65 @@
+<board>
+  <metadata>
+    <name>TestBoard</name>
+    <version>v-1</version>
+    <author>ilevelin</author>
+    <boardType>Square2D</boardType>
+  </metadata>
+
+  <players>
+    <player>
+      <team>1</team>
+      <color>200,0,0</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>2</team>
+      <color>0,0,200</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>2</team>
+      <color>0,200,0</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>2</team>
+      <color>200,200,0</color>
+      <direction>1</direction>
+    </player>
+  </players>
+
+  <pieces>
+    <piece type="king">
+      <ID>ile.03</ID>
+      <value>10</value>
+      <char>K</char>
+    </piece>
+    <piece>
+      <ID>ile.01</ID>
+      <value>5</value>
+      <char>R</char>
+    </piece>
+    <piece>
+      <ID>ile.02</ID>
+      <value>3</value>
+      <char>B</char>
+    </piece>
+  </pieces>
+
+  <position>
+    <row>_,4R,0,4B,_,3B,0,3R,_</row>
+    <row>4R,4K,0,0,_,0,0,3K,3R</row>
+    <row>0,0,0,0,0,0,0,0,0</row>
+    <row>4B,0,0,0,0,0,0,0,3B</row>
+    <row>_,_,0,0,0,0,0,_,_</row>
+    <row>1B,0,0,0,0,0,0,0,2B</row>
+    <row>0,0,0,0,0,0,0,0,0</row>
+    <row>1R,1K,0,0,_,0,0,2K,2R</row>
+    <row>_,1R,0,1B,_,2B,0,2R,_</row>
+  </position>
+
+  <specials>
+    <!-- TO BE IMPLEMENTED -->
+  </specials>
+</board>

@@ -19,6 +19,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     List<CircleMarker> circleMarkers = new List<CircleMarker>();
 
     PieceSquare2D[][] board;
+    public bool[][] existingCells;
 
     private void Start()
     {
@@ -41,7 +42,14 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         if (boardSize.Length != 2) return;
         {
             board = new PieceSquare2D[boardSize[0]][];
-            for (int i = 0; i < board.Length; i++) board[i] = new PieceSquare2D[boardSize[1]];
+            existingCells = new bool[boardSize[0]][];
+            for (int i = 0; i < board.Length; i++)
+            {
+                board[i] = new PieceSquare2D[boardSize[1]];
+                existingCells[i] = new bool[boardSize[1]];
+                for (int j = 0; j < existingCells[i].Length; j++)
+                    existingCells[i][j] = true;
+            }
         }
 
         playerInterface.GetComponent<PlayerInfoCoordinator>().Initialize(this);
@@ -52,7 +60,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         for (int i = 0; i < board.Length; i++)
             for (int j = 0; j < board[i].Length; j++)
                 if (board[i][j] != null)
-                    board[i][j].CheckMoves(board);
+                    board[i][j].CheckMoves(board, existingCells);
     }
 
     public void MousePressed(int[] location)
@@ -105,6 +113,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                     }
                     else
                     {
+                        board[selectedCell[0]][selectedCell[1]].HideMoves();
                         bool isSameCell = true;
                         for (int i = 0; i < pressCoords.Length; i++) if (pressCoords[i] != selectedCell[i]) isSameCell = false;
 
@@ -118,6 +127,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 }
                 else
                 {
+                    board[pressCoords[0]][pressCoords[1]].HideMoves();
                     MovePiece(pressCoords, releaseCoords);
                     selectedCell = null;
                 }
