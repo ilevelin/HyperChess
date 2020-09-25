@@ -17,4 +17,14 @@ public interface BoardCoordinator
     void RightMouseReleased(int[] location);
 
     int GetScoreOfPlayer(int i);
+
+    Piece GetPieceFromCell(int[] cell);
+    bool? DidPieceMoved(int[] cell);
+    void CreatePiece(int[] cell, char pieceChar);
+    void RemovePiece(int[] cell);
+    void MovePieceForced(int[] from, int[] to);
+    bool IsCellUnderAttack(int[] cell);
+
+    HisotryMove GetLastMove();
+    HisotryMove GetLastMoveFromPlayer(int player);
 }

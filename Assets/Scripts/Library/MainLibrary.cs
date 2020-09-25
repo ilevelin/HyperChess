@@ -12,6 +12,8 @@ public enum BoardType
 
 public class MainLibrary : MonoBehaviour
 {
+    
+
     XmlDocument pieceXML, boardXML;
     string externalFolderLocation = "./Assets/FutureExternalFolder"; // TEMPORAL FOLDER, CHANGE BEFORE COMPILING
 
@@ -606,8 +608,7 @@ public class MainLibrary : MonoBehaviour
                                         possible = false;
                                     }
                                 }
-
-                                Debug.Log("Columns = " + columns + " || This row = " + newRow.Count);
+                                
                                 if (columns == -1)
                                 {
                                     initialPosition.Add(newRow);
@@ -749,9 +750,8 @@ public class MainLibrary : MonoBehaviour
         }
 
         /*** LAST INIT ***/
-        Debug.Log("============= Library loaded. =============");
         GameObject.DontDestroyOnLoad(gameObject);
-        foreach (string message in importLog) Debug.Log(message); // Temporal
+        foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
     }
 
     public PieceElement GetPiece(string id)

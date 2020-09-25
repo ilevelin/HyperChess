@@ -16,19 +16,19 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     bool ready = false;
 
-    public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color)
+    public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color, int team)
     {
         if (players.Count == 0) delay = delayTime;
-        players.Add(new PlayerInfo(startingTime, incrementTime, delayTime, name, color));
+        players.Add(new PlayerInfo(startingTime, incrementTime, delayTime, name, color, team));
         times.Add(startingTime);
         GameObject tmp = GameObject.Instantiate(playerInfoPrefab, new Vector3((Screen.width) / 2, (Screen.height)-(10 + (50 * controllers.Count))), new Quaternion(), transform);
         controllers.Add(tmp.GetComponent<PlayerInfoController>());
         controllers[controllers.Count - 1].Initialize(color, name, startingTime);
     }
 
-    public void AddPlayer(int startingTime, int incrementTime, string name, Color color)
+    public void AddPlayer(int startingTime, int incrementTime, string name, Color color, int team)
     {
-        players.Add(new PlayerInfo(startingTime, incrementTime, 0, name, color));
+        players.Add(new PlayerInfo(startingTime, incrementTime, 0, name, color, team));
         times.Add(startingTime);
         GameObject tmp = GameObject.Instantiate(playerInfoPrefab, new Vector3((Screen.width) / 2, (Screen.height) - (10 + (50 * controllers.Count))), new Quaternion(), transform);
         controllers.Add(tmp.GetComponent<PlayerInfoController>());

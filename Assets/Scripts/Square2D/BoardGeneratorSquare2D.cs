@@ -10,23 +10,8 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     private MainLibrary mainLibrary;
     [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, boardCoordinator, samplePiece, playerInterface;
     [SerializeField] Color cellFirstColor, cellSecondColor;
-    List<Tuple<char, string, int>> importList = new List<Tuple<char, string, int>>()
-    {
-        new Tuple<char, string, int>('K', "ile.03", 50),
-        new Tuple<char, string, int>('B', "ile.02", 3),
-        new Tuple<char, string, int>('R', "ile.01", 5),
-    };
-    string[][] board = new string[][] {
-        new string[] {"4K", "4R", "0", "4B", "_", "3B", "0", "3R", "3K"},
-        new string[] {"4R", "0", "0", "0", "_", "0", "0", "0", "3R"},
-        new string[] {"0", "0", "0", "0", "0", "0", "0", "0", "0"},
-        new string[] {"4B", "0", "0", "0", "0", "0", "0", "0", "3B"},
-        new string[] {"_", "_", "0", "0", "0", "0", "0", "_", "_"},
-        new string[] {"1B", "0", "0", "0", "0", "0", "0", "0", "2B"},
-        new string[] {"0", "0", "0", "0", "0", "0", "0", "0", "0"},
-        new string[] {"1R", "0", "0", "0", "_", "0", "0", "0", "2R"},
-        new string[] {"1K", "1R", "0", "1B", "_", "2B", "0", "2R", "2K"},
-    };
+    List<Tuple<char, string, int>> importList;
+    string[][] board;
     List<PlayerInfo> playerList = new List<PlayerInfo>();
 
     Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
@@ -83,7 +68,8 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     playerList.Add(new PlayerInfo(
                         1000 * 60 * 5, 5000, 0,
                         "Player " + i,
-                        boardToLoad.players[i].color ?? default(Color)
+                        boardToLoad.players[i].color ?? default(Color),
+                        i + 100
                         ));
                 }
                 Debug.Log("Loaded Players = " + playerList.Count);
@@ -111,7 +97,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
     private void LateUpdate()
     {
-        //RecalculateCamera(); // Cuando este claro esto, se tiene que actualizar lo mínimo posible
+
     }
 
     void RecalculateCamera()
@@ -151,23 +137,9 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
                     if (board[boardHeight - 1 - j][i] != "0")
                     {
-                        tmp = GameObject.Instantiate(samplePiece, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0));
-                        Color tmpColor = playerList[int.Parse(board[boardHeight - 1 - j][i][0].ToString()) - 1].color;
-                        List<Move> pieceMoves;
-                        int pieceValue;
-                        Sprite pieceSprite;
-                        pieces.TryGetValue(board[boardHeight - 1 - j][i][1], out pieceMoves);
-                        values.TryGetValue(board[boardHeight - 1 - j][i][1], out pieceValue);
-                        sprites.TryGetValue(board[boardHeight - 1 - j][i][1], out pieceSprite);
-                        tmp.GetComponent<PieceSquare2D>().Initialize(
-                            new int[] { i, j }, boardCoordinator, 
-                            int.Parse(board[boardHeight - 1 - j][i][0].ToString()), 
-                            int.Parse(board[boardHeight - 1 - j][i][0].ToString())+100, 
-                            tmpColor, 
-                            pieceMoves, 
-                            pieceValue,
-                            pieceSprite
-                            );
+                        char pieceChar = board[boardHeight - 1 - j][i][1];
+                        int pieceOwner = int.Parse(board[boardHeight - 1 - j][i][0].ToString());
+                        CreatePiece(new int[] { boardHeight - 1 - j, i }, pieceChar, pieceOwner);
                     }
 
                 }
@@ -182,6 +154,43 @@ public class BoardGeneratorSquare2D : MonoBehaviour
         RecalculateCamera();
 
         boardCoordinator.GetComponent<BoardCoordinator>().CheckMoves();
+    }
+
+    public PieceSquare2D CreatePiece(int[] cell, char piece, int player)
+    {
+        try
+        {
+            if (cell.Length == 2)
+            {
+                GameObject newPiece = GameObject.Instantiate(samplePiece, new Vector3(cell[0], cell[1], 0), new Quaternion(0, 0, 0, 0));
+
+                List<Move> pieceMoves;
+                int pieceValue;
+                Sprite pieceSprite;
+                pieces.TryGetValue(piece, out pieceMoves);
+                values.TryGetValue(piece, out pieceValue);
+                sprites.TryGetValue(piece, out pieceSprite);
+
+                newPiece.GetComponent<PieceSquare2D>().Initialize(
+                    new int[] { cell[0], cell[1] },
+                    boardCoordinator,
+                    player,
+                    playerList[player - 1].team,
+                    playerList[player - 1].color,
+                    pieceMoves,
+                    pieceValue,
+                    piece,
+                    pieceSprite
+                    );
+
+                return newPiece.GetComponent<PieceSquare2D>();
+            }
+            else return null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
 }

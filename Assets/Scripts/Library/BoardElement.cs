@@ -12,7 +12,7 @@ public class BoardElement
     public List<PlayerImport> players;
     public Dictionary<char, PieceImport> pieceIDs;
     public Board initialState;
-    // TODO Añadir Especiales
+    public List<SpecialMove> specials;
 
     public BoardElement()
     {
@@ -23,6 +23,7 @@ public class BoardElement
 
         players = new List<PlayerImport>();
         pieceIDs = new Dictionary<char, PieceImport>();
+        specials = new List<SpecialMove>();
     }
 }
 
