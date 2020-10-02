@@ -22,10 +22,10 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     List<SpecialMove> specialMoves = new List<SpecialMove>();
     public List<HisotryMove> moveHistory = new List<HisotryMove>();
 
-    PieceSquare2D[][] board;
-    bool[][] movedPieces;
-    bool[][] existingCells;
-    bool[][] attacked;
+    public PieceSquare2D[][] board;
+    public bool[][] movedPieces;
+    public bool[][] existingCells;
+    public bool[][] attacked;
 
     private void Start()
     {

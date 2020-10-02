@@ -133,6 +133,18 @@ public class SpecialConditionLastMove : SpecialCondition
         }
         else return false;
     }
+
+    public SpecialConditionLastMove(int[] f, int[] t)
+    {
+        from = f;
+        to = t;
+    }
+    public SpecialConditionLastMove(int[] f, int[] t, int p)
+    {
+        from = f;
+        to = t;
+        player = p;
+    }
 }
 
 /* RESULTS */
