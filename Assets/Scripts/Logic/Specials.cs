@@ -162,6 +162,12 @@ public class SpecialResultMovePiece : SpecialResult
     {
         board.MovePieceForced(from, to);
     }
+
+    public SpecialResultMovePiece(int[] f, int[] t)
+    {
+        from = f;
+        to = t;
+    }
 }
 
 public class SpecialResultCreatePiece : SpecialResult
@@ -173,6 +179,12 @@ public class SpecialResultCreatePiece : SpecialResult
     {
         board.CreatePiece(where, what);
     }
+
+    public SpecialResultCreatePiece(int[] c, char p)
+    {
+        where = c;
+        what = p;
+    }
 }
 
 public class SpecialResultRemovePiece : SpecialResult
@@ -182,5 +194,10 @@ public class SpecialResultRemovePiece : SpecialResult
     public void Modify(BoardCoordinator board)
     {
         board.RemovePiece(where);
+    }
+
+    public SpecialResultRemovePiece(int[] c)
+    {
+        where = c;
     }
 }

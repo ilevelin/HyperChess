@@ -711,6 +711,7 @@ public class MainLibrary : MonoBehaviour
             /* LOADING SPECIALS */
             try
             {
+                bool skipboard = false;
                 XmlNodeList specialsList = board.GetElementsByTagName("specials")[0].ChildNodes;
                 foreach (XmlNode move in specialsList)
                 {
@@ -734,7 +735,6 @@ public class MainLibrary : MonoBehaviour
                     
                     foreach (XmlNode element in moveElements)
                     {
-                        bool valid = true;
                         switch (element.Name)
                         {
                             case "check":
@@ -818,6 +818,7 @@ public class MainLibrary : MonoBehaviour
                                         error = true;
                                         continue;
                                 }
+                                hasCondition = true;
                                 if (player == 0)
                                     resultMove.conditions.Add(new SpecialConditionCheck(condition, cellAux.ToArray(), piece));
                                 else
@@ -878,28 +879,132 @@ public class MainLibrary : MonoBehaviour
                                     continue;
                                 }
 
+                                hasCondition = true;
                                 if (fromPlayer == 0)
                                     resultMove.conditions.Add(new SpecialConditionLastMove(from, to));
                                 else
                                     resultMove.conditions.Add(new SpecialConditionLastMove(from, to, fromPlayer));
                                 break;
-                            case "movepiece": // == DOING =======================================================================
-                            case "createpiece":
-                            case "removepiece":
-                            default:
+                            case "movepiece":
+                                string fromText2, toText2;
+                                List<int> aux2 = new List<int>();
+                                int[] from2, to2;
+
+                                toText2 = element.InnerText.Substring(element.InnerText.IndexOf('-') + 1);
+                                fromText2 = element.InnerText.Substring(0, element.InnerText.IndexOf('-'));
+                                while (toText2.Contains(','))
+                                {
+                                    aux2.Add(int.Parse(toText2.Substring(0, toText2.IndexOf(','))));
+                                    toText = toText2.Substring(toText2.IndexOf(',') + 1);
+                                }
+                                if (aux2.Count == coordAmount)
+                                    to2 = aux2.ToArray();
+                                else
+                                {
+                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                    error = true;
+                                    continue;
+                                }
+
+                                while (fromText2.Contains(','))
+                                {
+                                    aux2.Add(int.Parse(fromText2.Substring(0, fromText2.IndexOf(','))));
+                                    fromText = fromText2.Substring(toText2.IndexOf(',') + 1);
+                                }
+                                if (aux2.Count == coordAmount)
+                                    from2 = aux2.ToArray();
+                                else
+                                {
+                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                    error = true;
+                                    continue;
+                                }
+                                hasMovePiece = true;
+                                resultMove.results.Add(new SpecialResultMovePiece(from2, to2));
                                 break;
-                        }
+                            case "createpiece":
+                                if (element.InnerText[1] == '-')
+                                {
+                                    if (newBoard.pieceIDs.Keys.Contains(element.InnerText[0]))
+                                    {
+                                        string cellText3;
+                                        List<int> aux4 = new List<int>();
+                                        int[] cell3;
 
-                        if (valid)
-                        {
+                                        cellText3 = element.InnerText.Substring(2);
+                                        while (cellText3.Contains(','))
+                                        {
+                                            aux4.Add(int.Parse(cellText3.Substring(0, cellText3.IndexOf(','))));
+                                            toText = cellText3.Substring(cellText3.IndexOf(',') + 1);
+                                        }
+                                        if (aux4.Count == coordAmount)
+                                        {
+                                            cell3 = aux4.ToArray();
+                                            resultMove.results.Add(new SpecialResultCreatePiece(cell3, element.InnerText[0]));
+                                        }
+                                        else
+                                        {
+                                            importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                            error = true;
+                                            continue;
+                                        }
 
-                        }
-                        else
-                        {
+                                    }
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] A \"createpiece\" tries to create a piece that is not in the piece list.");
+                                        error = true;
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    importLog.Add("[ERROR] A \"createpiece\" is formated incorrectly.");
+                                    error = true;
+                                    continue;
+                                }
+                                break;
+                            case "removepiece":
+                                string cellText2;
+                                List<int> aux3 = new List<int>();
+                                int[] cell2;
 
+                                cellText2 = element.InnerText.Substring(2);
+                                while (cellText2.Contains(','))
+                                {
+                                    aux3.Add(int.Parse(cellText2.Substring(0, cellText2.IndexOf(','))));
+                                    toText = cellText2.Substring(cellText2.IndexOf(',') + 1);
+                                }
+                                if (aux3.Count == coordAmount)
+                                {
+                                    cell2 = aux3.ToArray();
+                                    resultMove.results.Add(new SpecialResultRemovePiece(cell2));
+                                }
+                                else
+                                {
+                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                    error = true;
+                                    continue;
+                                }
+                                break;
+                            default:
+                                importLog.Add($"[ERROR] \"{element.Name}\" is not a valid element for a special move.");
+                                error = true;
+                                continue;
                         }
                     }
+
+                    if (hasMovePiece && hasCondition && !error)
+                    {
+                        newBoard.specials.Add(resultMove);
+                    }
+                    else
+                    {
+                        skipboard = true;
+                        break;
+                    }
                 }
+                if (skipboard) continue;
             }
             catch
             {
@@ -948,7 +1053,7 @@ public class MainLibrary : MonoBehaviour
 
         /*** LAST INIT ***/
         GameObject.DontDestroyOnLoad(gameObject);
-        foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
+        //foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
     }
 
     public PieceElement GetPiece(string id)

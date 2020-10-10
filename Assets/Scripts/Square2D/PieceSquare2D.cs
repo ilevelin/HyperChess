@@ -33,9 +33,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
         GetComponent<SpriteRenderer>().color = ownerColor;
         moves = pieceMoves;
         value = val;
-        RenderPiece();
         possibleMoveParent = GameObject.FindWithTag("PossibleMoves");
         character = charac;
+        RenderPiece();
     }
 
     public void CheckMoves(PieceSquare2D[][] board, bool[][] existingCells)

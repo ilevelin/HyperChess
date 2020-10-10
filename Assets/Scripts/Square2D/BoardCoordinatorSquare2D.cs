@@ -31,6 +31,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     {
         interfaceCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
         boardGenerator = boardGeneratorObject.GetComponent<BoardGeneratorSquare2D>();
+        boardGenerator.StartAfterCoordinator();
     }
 
     private void Update()
@@ -48,18 +49,22 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     {
         if (boardSize.Length != 2) return;
         {
-            board = new PieceSquare2D[boardSize[0]][];
-            existingCells = new bool[boardSize[0]][];
-            movedPieces = new bool[boardSize[0]][];
+            board = new PieceSquare2D[boardSize[1]][];
+            movedPieces = new bool[boardSize[1]][];
+            existingCells = new bool[boardSize[1]][];
+            attacked = new bool[boardSize[1]][];
             for (int i = 0; i < board.Length; i++)
             {
-                board[i] = new PieceSquare2D[boardSize[1]];
-                existingCells[i] = new bool[boardSize[1]];
-                movedPieces[i] = new bool[boardSize[1]];
+                board[i] = new PieceSquare2D[boardSize[0]];
+                movedPieces[i] = new bool[boardSize[0]];
+                existingCells[i] = new bool[boardSize[0]];
+                attacked[i] = new bool[boardSize[0]];
                 for (int j = 0; j < existingCells[i].Length; j++)
                 {
+                    board[i][j] = null;
                     existingCells[i][j] = true;
                     movedPieces[i][j] = false;
+                    attacked[i][j] = false;
                 }
             }
         }
@@ -72,13 +77,18 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         List<int[]> attackedCells = new List<int[]>();
         for (int i = 0; i < board.Length; i++)
             for (int j = 0; j < board[i].Length; j++)
-                if (board[i][j] != null)
+            {
+                if (!(board[i][j] is null))
                 {
-                    if (board[i][j].player == interfaceCoordinator.turn) // Modificar esto mas tarde para impedir al rey que se meta donde no toca.
+                    board[i][j].avaliableMoves.Clear();
+                    if (board[i][j].player == (interfaceCoordinator.turn + 1)) // Modificar esto mas tarde para impedir al rey que se meta donde no toca.
                         board[i][j].CheckMoves(board, existingCells);
                     else
+                    {
                         attackedCells.AddRange(board[i][j].GetAttacks(board, existingCells));
+                    }
                 }
+            }
 
         for (int i = 0; i < attacked.Length; i++)
             for (int j = 0; j < attacked[i].Length; j++)

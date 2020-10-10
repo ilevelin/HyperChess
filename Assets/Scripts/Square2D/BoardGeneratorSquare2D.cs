@@ -18,7 +18,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
     Dictionary<char, int> values = new Dictionary<char, int>();
 
-    void Start()
+    public void StartAfterCoordinator()
     {
         mainLibrary = GameObject.FindGameObjectWithTag("MainLibrary").GetComponent<MainLibrary>();
         /*
@@ -34,11 +34,12 @@ public class BoardGeneratorSquare2D : MonoBehaviour
         }
         */
         LoadBoardFromLibrary("TestBoard");
-        RenderBoard();
 
         PlayerInfoCoordinator playerCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
         foreach(PlayerInfo player in playerList)
             playerCoordinator.AddPlayer(player);
+
+        RenderBoard();
     }
 
     public void LoadBoardFromLibrary(string boardName)
@@ -72,12 +73,11 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                         i + 100
                         ));
                 }
-                Debug.Log("Loaded Players = " + playerList.Count);
             }
         }
-        catch
+        catch (Exception e)
         {
-
+            Debug.Log(e.ToString());
         }
     }
 
@@ -139,14 +139,14 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     {
                         char pieceChar = board[boardHeight - 1 - j][i][1];
                         int pieceOwner = int.Parse(board[boardHeight - 1 - j][i][0].ToString());
-                        CreatePiece(new int[] { boardHeight - 1 - j, i }, pieceChar, pieceOwner);
+                        CreatePiece(new int[] { i, j }, pieceChar, pieceOwner);
                     }
 
                 }
                 else
                 {
                     if (boardCoordinator.GetComponent<BoardCoordinator>() is BoardCoordinatorSquare2D)
-                        ((BoardCoordinatorSquare2D)boardCoordinator.GetComponent<BoardCoordinator>()).existingCells[boardHeight - 1 - j][i] = false;
+                        ((BoardCoordinatorSquare2D)boardCoordinator.GetComponent<BoardCoordinator>()).existingCells[i][boardHeight - 1 - j] = false;
                 }
 
             }
