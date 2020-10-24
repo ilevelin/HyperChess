@@ -182,7 +182,7 @@ public class MainLibrary : MonoBehaviour
                                     possible = false;
                                 }
 
-                                moveCoords.Add(newCoord);
+                                moveCoords.Insert(0, newCoord);
                             }
                         }
                         catch
@@ -542,6 +542,15 @@ public class MainLibrary : MonoBehaviour
                             failed = true;
                             continue;
                         }
+                        else
+                        {
+                            PieceElement tmp;
+                            pieceLibrary.TryGetValue(newPiece.ID, out tmp);
+                            if (tmp.boardType != newBoard.boardType)
+                            {
+                                importLog.Add("[WARNING] Specified piece is not of the same board type of the board. Skipping.");
+                            }
+                        }
                         if (newPiece.value < 0)
                         {
                             importLog.Add("[WARNING] Piece value cannot be negative. Skipping.");
@@ -561,7 +570,7 @@ public class MainLibrary : MonoBehaviour
                 }
                 if (failed)
                 {
-                    importLog.Add("[ERROR] At least one piece entry is not complete. Skipping board.");
+                    importLog.Add("[ERROR] At least one piece entry has failed. Skipping board.");
                     continue;
                 }
             }
@@ -720,7 +729,7 @@ public class MainLibrary : MonoBehaviour
                         importLog.Add("[WARNING] There is something in \"specials\" that is not a move. Ignoring.");
                         continue;
                     }
-
+                    
                     XmlNodeList moveElements = move.ChildNodes;
                     bool hasMovePiece = false, hasCondition = false, error = false;
                     SpecialMove resultMove = new SpecialMove();
@@ -738,253 +747,297 @@ public class MainLibrary : MonoBehaviour
                         switch (element.Name)
                         {
                             case "check":
-                                string conditionText = element.InnerText;
-                                SpecialConditionCheckType condition = SpecialConditionCheckType.NULL;
-                                char piece = ' ';
-                                int player = 0;
-                                string cellText = "";
-
-                                List<int> cellAux = new List<int>();
-                                if (element.Attributes.Count == 1)
+                                try
                                 {
-                                    if (element.Attributes[0].Name == "cell")
-                                        cellText = element.Attributes[0].InnerText;
-                                    else
+                                    string conditionText = element.InnerText;
+                                    SpecialConditionCheckType condition = SpecialConditionCheckType.NULL;
+                                    char piece = ' ';
+                                    int player = 0;
+                                    string cellText = "";
+
+                                    List<int> cellAux = new List<int>();
+                                    if (element.Attributes.Count == 1)
                                     {
-                                        importLog.Add("[ERROR] The attribute must be named \"cell\" in a \"check\" element.");
-                                        error = true;
-                                        continue;
-                                    }
-                                }
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of attributes in a \"check\" element is incorrect.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                while (cellText.Contains(','))
-                                {
-                                    cellAux.Add(int.Parse(cellText.Substring(0,cellText.IndexOf(','))));
-                                    cellText = cellText.Substring(cellText.IndexOf(',') + 1);
-                                }
-
-                                if(cellAux.Count != coordAmount)
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                if (conditionText.StartsWith("ispiece"))
-                                {
-                                    piece = conditionText[7];
-                                    conditionText = "ispiece";
-                                }
-                                if (conditionText.StartsWith("isplayer"))
-                                {
-                                    player = int.Parse(conditionText[8].ToString());
-                                    conditionText = "isplayer";
-                                }
-
-                                switch (conditionText)
-                                {
-                                    case "hasmoved":
-                                        condition = SpecialConditionCheckType.HASMOVED;
-                                        break;
-                                    case "hasnotmoved":
-                                        condition = SpecialConditionCheckType.HASNOTMOVED;
-                                        break;
-                                    case "ispiece":
-                                        condition = SpecialConditionCheckType.ISPIECE;
-                                        break;
-                                    case "isplayer":
-                                        condition = SpecialConditionCheckType.ISPLAYER;
-                                        break;
-                                    case "isempty":
-                                        condition = SpecialConditionCheckType.ISEMPTY;
-                                        break;
-                                    case "isnotempty":
-                                        condition = SpecialConditionCheckType.ISNOTEMPTY;
-                                        break;
-                                    case "isattacked":
-                                        condition = SpecialConditionCheckType.ISATTACKED;
-                                        break;
-                                    case "issafe":
-                                        condition = SpecialConditionCheckType.ISSAFE;
-                                        break;
-                                    default:
-                                        importLog.Add("[ERROR] The condition of a \"check\" element is incorrect.");
-                                        error = true;
-                                        continue;
-                                }
-                                hasCondition = true;
-                                if (player == 0)
-                                    resultMove.conditions.Add(new SpecialConditionCheck(condition, cellAux.ToArray(), piece));
-                                else
-                                    resultMove.conditions.Add(new SpecialConditionCheck(condition, cellAux.ToArray(), player));
-                                break;
-                            case "lastmove":
-                                string fromText, toText;
-                                List<int> aux = new List<int>();
-                                int[] from, to;
-                                int fromPlayer = 0;
-
-                                toText = element.InnerText.Substring(element.InnerText.IndexOf('-')+1);
-                                fromText = element.InnerText.Substring(0, element.InnerText.IndexOf('-'));
-                                while (toText.Contains(','))
-                                {
-                                    aux.Add(int.Parse(toText.Substring(0, toText.IndexOf(','))));
-                                    toText = toText.Substring(toText.IndexOf(',') + 1);
-                                }
-                                if (aux.Count == coordAmount)
-                                    to = aux.ToArray();
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                while (fromText.Contains(','))
-                                {
-                                    aux.Add(int.Parse(fromText.Substring(0, fromText.IndexOf(','))));
-                                    fromText = fromText.Substring(toText.IndexOf(',') + 1);
-                                }
-                                if (aux.Count == coordAmount)
-                                    from = aux.ToArray();
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                if (element.Attributes.Count == 1)
-                                {
-                                    if (element.Attributes[0].Name == "player")
-                                        fromPlayer = int.Parse(element.Attributes[0].InnerText);
-                                    else
-                                    {
-                                        importLog.Add("[ERROR] The attribute must be named \"player\" in a \"lastmove\" element.");
-                                        error = true;
-                                        continue;
-                                    }
-                                }
-                                else if (element.Attributes.Count != 0)
-                                {
-
-                                    importLog.Add("[ERROR] The amount of attributes in a \"lastmove\" element is incorrect.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                hasCondition = true;
-                                if (fromPlayer == 0)
-                                    resultMove.conditions.Add(new SpecialConditionLastMove(from, to));
-                                else
-                                    resultMove.conditions.Add(new SpecialConditionLastMove(from, to, fromPlayer));
-                                break;
-                            case "movepiece":
-                                string fromText2, toText2;
-                                List<int> aux2 = new List<int>();
-                                int[] from2, to2;
-
-                                toText2 = element.InnerText.Substring(element.InnerText.IndexOf('-') + 1);
-                                fromText2 = element.InnerText.Substring(0, element.InnerText.IndexOf('-'));
-                                while (toText2.Contains(','))
-                                {
-                                    aux2.Add(int.Parse(toText2.Substring(0, toText2.IndexOf(','))));
-                                    toText = toText2.Substring(toText2.IndexOf(',') + 1);
-                                }
-                                if (aux2.Count == coordAmount)
-                                    to2 = aux2.ToArray();
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
-                                }
-
-                                while (fromText2.Contains(','))
-                                {
-                                    aux2.Add(int.Parse(fromText2.Substring(0, fromText2.IndexOf(','))));
-                                    fromText = fromText2.Substring(toText2.IndexOf(',') + 1);
-                                }
-                                if (aux2.Count == coordAmount)
-                                    from2 = aux2.ToArray();
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
-                                }
-                                hasMovePiece = true;
-                                resultMove.results.Add(new SpecialResultMovePiece(from2, to2));
-                                break;
-                            case "createpiece":
-                                if (element.InnerText[1] == '-')
-                                {
-                                    if (newBoard.pieceIDs.Keys.Contains(element.InnerText[0]))
-                                    {
-                                        string cellText3;
-                                        List<int> aux4 = new List<int>();
-                                        int[] cell3;
-
-                                        cellText3 = element.InnerText.Substring(2);
-                                        while (cellText3.Contains(','))
-                                        {
-                                            aux4.Add(int.Parse(cellText3.Substring(0, cellText3.IndexOf(','))));
-                                            toText = cellText3.Substring(cellText3.IndexOf(',') + 1);
-                                        }
-                                        if (aux4.Count == coordAmount)
-                                        {
-                                            cell3 = aux4.ToArray();
-                                            resultMove.results.Add(new SpecialResultCreatePiece(cell3, element.InnerText[0]));
-                                        }
+                                        if (element.Attributes[0].Name == "cell")
+                                            cellText = element.Attributes[0].InnerText;
                                         else
                                         {
-                                            importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                            importLog.Add("[ERROR] The attribute must be named \"cell\" in a \"check\" element.");
                                             error = true;
                                             continue;
                                         }
-
                                     }
                                     else
                                     {
-                                        importLog.Add("[ERROR] A \"createpiece\" tries to create a piece that is not in the piece list.");
+                                        importLog.Add("[ERROR] The amount of attributes in a \"check\" element is incorrect.");
+                                        error = true;
+                                        continue;
+                                    }
+
+                                    while (cellText.Contains(','))
+                                    {
+                                        cellAux.Insert(0,int.Parse(cellText.Substring(0, cellText.IndexOf(',')))-1);
+                                        cellText = cellText.Substring(cellText.IndexOf(',') + 1);
+                                    }
+                                    cellAux.Insert(0, int.Parse(cellText)-1);
+
+                                    if (cellAux.Count != coordAmount)
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
+
+                                    if (conditionText.StartsWith("ispiece"))
+                                    {
+                                        piece = conditionText[7];
+                                        conditionText = "ispiece";
+                                    }
+                                    if (conditionText.StartsWith("isplayer"))
+                                    {
+                                        player = int.Parse(conditionText[8].ToString());
+                                        conditionText = "isplayer";
+                                    }
+
+                                    switch (conditionText)
+                                    {
+                                        case "hasmoved":
+                                            condition = SpecialConditionCheckType.HASMOVED;
+                                            break;
+                                        case "hasnotmoved":
+                                            condition = SpecialConditionCheckType.HASNOTMOVED;
+                                            break;
+                                        case "ispiece":
+                                            condition = SpecialConditionCheckType.ISPIECE;
+                                            break;
+                                        case "isplayer":
+                                            condition = SpecialConditionCheckType.ISPLAYER;
+                                            break;
+                                        case "isempty":
+                                            condition = SpecialConditionCheckType.ISEMPTY;
+                                            break;
+                                        case "isnotempty":
+                                            condition = SpecialConditionCheckType.ISNOTEMPTY;
+                                            break;
+                                        case "isattacked":
+                                            condition = SpecialConditionCheckType.ISATTACKED;
+                                            break;
+                                        case "issafe":
+                                            condition = SpecialConditionCheckType.ISSAFE;
+                                            break;
+                                        default:
+                                            importLog.Add("[ERROR] The condition of a \"check\" element is incorrect.");
+                                            error = true;
+                                            continue;
+                                    }
+                                    hasCondition = true;
+                                    if (player == 0)
+                                        resultMove.conditions.Add(new SpecialConditionCheck(condition, cellAux.ToArray(), piece));
+                                    else
+                                        resultMove.conditions.Add(new SpecialConditionCheck(condition, cellAux.ToArray(), player));
+                                }
+                                catch (Exception e)
+                                {
+                                    importLog.Add("[ERROR] An exception ocurred while checking a \"check\" element. Error: " + e);
+                                }
+                                break;
+                            case "lastmove":
+                                try
+                                {
+                                    string fromText, toText;
+                                    List<int> aux = new List<int>();
+                                    int[] from, to;
+                                    int fromPlayer = 0;
+                                    
+                                    toText = element.InnerText.Substring(element.InnerText.IndexOf('-') + 1);
+                                    fromText = element.InnerText.Substring(0, element.InnerText.IndexOf('-'));
+                                    while (toText.Contains(','))
+                                    {
+                                        aux.Insert(0, int.Parse(toText.Substring(0, toText.IndexOf(',')))-1);
+                                        toText = toText.Substring(toText.IndexOf(',') + 1);
+                                    }
+                                    aux.Insert(0, int.Parse(toText)-1);
+                                    if (aux.Count == coordAmount)
+                                        to = aux.ToArray();
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
+                                    aux.Clear();
+                                    
+                                    while (fromText.Contains(','))
+                                    {
+                                        aux.Insert(0, int.Parse(fromText.Substring(0, fromText.IndexOf(',')))-1);
+                                        fromText = fromText.Substring(fromText.IndexOf(',') + 1);
+                                    }
+                                    aux.Insert(0, int.Parse(fromText)-1);
+                                    if (aux.Count == coordAmount)
+                                        from = aux.ToArray();
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
+                                    
+                                    if (element.Attributes.Count == 1)
+                                    {
+                                        if (element.Attributes[0].Name == "player")
+                                            fromPlayer = int.Parse(element.Attributes[0].InnerText);
+                                        else
+                                        {
+                                            importLog.Add("[ERROR] The attribute must be named \"player\" in a \"lastmove\" element.");
+                                            error = true;
+                                            continue;
+                                        }
+                                    }
+                                    else if (element.Attributes.Count != 0)
+                                    {
+
+                                        importLog.Add("[ERROR] The amount of attributes in a \"lastmove\" element is incorrect.");
+                                        error = true;
+                                        continue;
+                                    }
+                                    
+                                    hasCondition = true;
+                                    if (fromPlayer == 0)
+                                        resultMove.conditions.Add(new SpecialConditionLastMove(from, to));
+                                    else
+                                        resultMove.conditions.Add(new SpecialConditionLastMove(from, to, fromPlayer));
+                                }
+                                catch (Exception e)
+                                {
+                                    importLog.Add("[ERROR] An exception ocurred while checking a \"lastmove\" element. Error: " + e);
+                                }
+                                break;
+                            case "movepiece":
+                                try
+                                {
+                                    string fromText2, toText2;
+                                    List<int> aux2 = new List<int>();
+                                    int[] from2, to2;
+
+                                    toText2 = element.InnerText.Substring(element.InnerText.IndexOf('-') + 1);
+                                    fromText2 = element.InnerText.Substring(0, element.InnerText.IndexOf('-'));
+                                    while (toText2.Contains(','))
+                                    {
+                                        aux2.Insert(0, int.Parse(toText2.Substring(0, toText2.IndexOf(',')))-1);
+                                        toText2 = toText2.Substring(toText2.IndexOf(',') + 1);
+                                    }
+                                    aux2.Insert(0, int.Parse(toText2)-1);
+                                    if (aux2.Count == coordAmount)
+                                        to2 = aux2.ToArray();
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
+                                    
+                                    aux2.Clear();
+                                    while (fromText2.Contains(','))
+                                    {
+                                        aux2.Insert(0, int.Parse(fromText2.Substring(0, fromText2.IndexOf(',')))-1);
+                                        fromText2 = fromText2.Substring(fromText2.IndexOf(',') + 1);
+                                    }
+                                    aux2.Insert(0, int.Parse(fromText2)-1);
+                                    if (aux2.Count == coordAmount)
+                                        from2 = aux2.ToArray();
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
+                                    aux2.Clear();
+                                    hasMovePiece = true;
+                                    resultMove.results.Add(new SpecialResultMovePiece(from2, to2));
+                                }
+                                catch (Exception e)
+                                {
+                                    importLog.Add("[ERROR] An exception ocurred while checking a \"movepiece\" element. Error: " + e);
+                                }
+                                break;
+                            case "createpiece":
+                                try
+                                {
+                                    if (element.InnerText[1] == '-')
+                                    {
+                                        if (newBoard.pieceIDs.Keys.Contains(element.InnerText[0]))
+                                        {
+                                            string cellText3;
+                                            List<int> aux4 = new List<int>();
+                                            int[] cell3;
+
+                                            cellText3 = element.InnerText.Substring(2);
+                                            while (cellText3.Contains(','))
+                                            {
+                                                aux4.Insert(0, int.Parse(cellText3.Substring(0, cellText3.IndexOf(',')))-1);
+                                                cellText3 = cellText3.Substring(cellText3.IndexOf(',') + 1);
+                                            }
+                                            aux4.Insert(0, int.Parse(cellText3)-1);
+                                            if (aux4.Count == coordAmount)
+                                            {
+                                                cell3 = aux4.ToArray();
+                                                resultMove.results.Add(new SpecialResultCreatePiece(cell3, element.InnerText[0]));
+                                            }
+                                            else
+                                            {
+                                                importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                                error = true;
+                                                continue;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            importLog.Add("[ERROR] A \"createpiece\" tries to create a piece that is not in the piece list.");
+                                            error = true;
+                                            continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] A \"createpiece\" is formated incorrectly.");
                                         error = true;
                                         continue;
                                     }
                                 }
-                                else
+                                catch (Exception e)
                                 {
-                                    importLog.Add("[ERROR] A \"createpiece\" is formated incorrectly.");
-                                    error = true;
-                                    continue;
+                                    importLog.Add("[ERROR] An exception ocurred while checking a \"createpiece\" element. Error: " + e);
                                 }
                                 break;
                             case "removepiece":
-                                string cellText2;
-                                List<int> aux3 = new List<int>();
-                                int[] cell2;
-
-                                cellText2 = element.InnerText.Substring(2);
-                                while (cellText2.Contains(','))
+                                try
                                 {
-                                    aux3.Add(int.Parse(cellText2.Substring(0, cellText2.IndexOf(','))));
-                                    toText = cellText2.Substring(cellText2.IndexOf(',') + 1);
+                                    string cellText2 = element.InnerText;
+                                    List<int> aux3 = new List<int>();
+                                    int[] cell2;
+                                    
+                                    while (cellText2.Contains(','))
+                                    {
+                                        aux3.Insert(0, int.Parse(cellText2.Substring(0, cellText2.IndexOf(',')))-1);
+                                        cellText2 = cellText2.Substring(cellText2.IndexOf(',') + 1);
+                                    }
+                                    aux3.Insert(0, int.Parse(cellText2) - 1);
+                                    if (aux3.Count == coordAmount)
+                                    {
+                                        cell2 = aux3.ToArray();
+                                        resultMove.results.Add(new SpecialResultRemovePiece(cell2));
+                                    }
+                                    else
+                                    {
+                                        importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
+                                        error = true;
+                                        continue;
+                                    }
                                 }
-                                if (aux3.Count == coordAmount)
+                                catch (Exception e)
                                 {
-                                    cell2 = aux3.ToArray();
-                                    resultMove.results.Add(new SpecialResultRemovePiece(cell2));
-                                }
-                                else
-                                {
-                                    importLog.Add("[ERROR] The amount of coordinates is incorrect for a board of this type.");
-                                    error = true;
-                                    continue;
+                                    importLog.Add("[ERROR] An exception ocurred while checking a \"removepiece\" element. Error: " + e);
                                 }
                                 break;
                             default:
@@ -993,7 +1046,7 @@ public class MainLibrary : MonoBehaviour
                                 continue;
                         }
                     }
-
+                    
                     if (hasMovePiece && hasCondition && !error)
                     {
                         newBoard.specials.Add(resultMove);
@@ -1003,6 +1056,7 @@ public class MainLibrary : MonoBehaviour
                         skipboard = true;
                         break;
                     }
+                    
                 }
                 if (skipboard) continue;
             }
@@ -1053,7 +1107,7 @@ public class MainLibrary : MonoBehaviour
 
         /*** LAST INIT ***/
         GameObject.DontDestroyOnLoad(gameObject);
-        //foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
+        foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
     }
 
     public PieceElement GetPiece(string id)

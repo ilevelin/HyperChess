@@ -19,8 +19,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     List<ArrowMarker> arrowMarkers = new List<ArrowMarker>();
     List<CircleMarker> circleMarkers = new List<CircleMarker>();
     List<SpecialMove> availableSpecials = new List<SpecialMove>();
-    List<SpecialMove> specialMoves = new List<SpecialMove>();
-    public List<HisotryMove> moveHistory = new List<HisotryMove>();
+    public List<SpecialMove> specialMoves = new List<SpecialMove>();
+    public List<HistoryMove> moveHistory = new List<HistoryMove>();
 
     public PieceSquare2D[][] board;
     public bool[][] movedPieces;
@@ -70,6 +70,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
 
         playerInterface.GetComponent<PlayerInfoCoordinator>().Initialize(this);
+        Debug.Log(specialMoves.Count);
     }
 
     public void CheckMoves()
@@ -81,6 +82,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 if (!(board[i][j] is null))
                 {
                     board[i][j].avaliableMoves.Clear();
+                    board[i][j].avaliableSpecials.Clear();
                     if (board[i][j].player == (interfaceCoordinator.turn + 1)) // Modificar esto mas tarde para impedir al rey que se meta donde no toca.
                         board[i][j].CheckMoves(board, existingCells);
                     else
@@ -98,8 +100,18 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
             attacked[cell[0]][cell[1]] = true;
 
         availableSpecials.Clear();
-        foreach(SpecialMove move in specialMoves)
-            if (move.Check(this)) availableSpecials.Add(move);
+        foreach (SpecialMove move in specialMoves)
+        {
+            if (move.Check(this))
+            {
+                availableSpecials.Add(move);
+                Tuple<int[], int[]> moveCoords = move.GetMove();
+                if (board[moveCoords.Item1[0]][moveCoords.Item1[1]] != null)
+                {
+                    board[moveCoords.Item1[0]][moveCoords.Item1[1]].avaliableSpecials.Add(moveCoords.Item2);
+                }
+            }
+        }
     }
 
     public void MousePressed(int[] location)
@@ -266,7 +278,10 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                     board[to[0]][to[1]] = board[from[0]][from[1]];
                     board[from[0]][from[1]] = null;
 
-                    moveHistory.Insert(0, new HisotryMove(interfaceCoordinator.turn, from, to));
+                    movedPieces[from[0]][from[1]] = true;
+                    movedPieces[to[0]][to[1]] = true;
+
+                    moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
                     interfaceCoordinator.NextTurn(true);
                     CheckMoves();
                 }
@@ -280,7 +295,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                 if(coords.Item2[0] == to[0] && coords.Item2[1] == to[1])
                                 {
                                     move.RunMove(this);
-                                    moveHistory.Insert(0, new HisotryMove(interfaceCoordinator.turn, from, to));
+                                    moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
                                     interfaceCoordinator.NextTurn(true);
                                     CheckMoves();
                                     break;
@@ -343,6 +358,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     {
         if (from.Length == 2 && to.Length == 2)
         {
+            board[from[0]][from[1]].ForceMoveTo(to);
+
             if (board[to[0]][to[1]] != null) board[to[0]][to[1]].Captured();
             board[to[0]][to[1]] = board[from[0]][from[1]];
             board[from[0]][from[1]] = null;
@@ -360,26 +377,28 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         else return false;
     }
 
-    public HisotryMove GetLastMove()
+    public List<HistoryMove> GetLastMoves()
     {
-        if (moveHistory.Count == 0) return null;
-        else return moveHistory[0];
+        List<HistoryMove> lastMoves = new List<HistoryMove>();
+        for (int i = 1; i <= interfaceCoordinator.GetPlayerAmmount(); i++)
+            lastMoves.Add(GetLastMoveFromPlayer(i));
+        return lastMoves;
     }
 
-    public HisotryMove GetLastMoveFromPlayer(int player)
+    public HistoryMove GetLastMoveFromPlayer(int player)
     {
-        foreach (HisotryMove move in moveHistory)
+        foreach (HistoryMove move in moveHistory)
             if (move.player == player) return move;
         return null;
     }
 }
 
-public class HisotryMove
+public class HistoryMove
 {
     public int player;
     public int[] from, to;
 
-    public HisotryMove(int p, int[] f, int[] t)
+    public HistoryMove(int p, int[] f, int[] t)
     {
         player = p;
         from = f;

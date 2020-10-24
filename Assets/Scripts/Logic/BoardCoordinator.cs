@@ -25,6 +25,6 @@ public interface BoardCoordinator
     void MovePieceForced(int[] from, int[] to);
     bool IsCellUnderAttack(int[] cell);
 
-    HisotryMove GetLastMove();
-    HisotryMove GetLastMoveFromPlayer(int player);
+    List<HistoryMove> GetLastMoves();
+    HistoryMove GetLastMoveFromPlayer(int player);
 }

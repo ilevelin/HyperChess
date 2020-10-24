@@ -10,6 +10,12 @@ public class SpecialMove
     public List<SpecialCondition> conditions;
     public List<SpecialResult> results;
 
+    public SpecialMove()
+    {
+        conditions = new List<SpecialCondition>();
+        results = new List<SpecialResult>();
+    }
+
     public bool Check(BoardCoordinator board)
     {
         foreach(SpecialCondition cond in conditions)
@@ -84,10 +90,24 @@ public class SpecialConditionCheck : SpecialCondition
                 return tmp ?? false;
 
             case SpecialConditionCheckType.ISPIECE:
-                return board.GetPieceFromCell(cell).GetCharacter() == piece;
+                try
+                {
+                    return board.GetPieceFromCell(cell).GetCharacter() == piece;
+                }
+                catch
+                {
+                    return false;
+                }
 
             case SpecialConditionCheckType.ISPLAYER:
-                return board.GetPieceFromCell(cell).GetPlayer() == player;
+                try
+                {
+                    return board.GetPieceFromCell(cell).GetPlayer() == player;
+                }
+                catch
+                {
+                    return false;
+                }
 
             case SpecialConditionCheckType.ISEMPTY:
                 return board.GetPieceFromCell(cell) == null;
@@ -114,24 +134,44 @@ public class SpecialConditionLastMove : SpecialCondition
 
     public bool Check(BoardCoordinator board)
     {
-        HisotryMove lastMove;
         if (player != 0)
-            lastMove = board.GetLastMoveFromPlayer(player);
-        else
-            lastMove = board.GetLastMove();
-
-        bool result = true;
-        if (from.Length == lastMove.from.Length && to.Length == lastMove.to.Length)
         {
-            for (int i = 0; i < from.Length && result; i++)
+            HistoryMove lastMove = board.GetLastMoveFromPlayer(player);
+            if (lastMove == null) return false;
+            bool result = true;
+            if (from.Length == lastMove.from.Length && to.Length == lastMove.to.Length)
             {
-                if (from[i] != lastMove.from[i]) result = false;
-                if (to[i] != lastMove.to[i]) result = false;
-            }
+                for (int i = 0; i < from.Length && result; i++)
+                {
+                    if (from[i] != lastMove.from[i]) result = false;
+                    if (to[i] != lastMove.to[i]) result = false;
+                }
 
-            return result;
+                return result;
+            }
+            else return false;
         }
-        else return false;
+        else
+        {
+            List<HistoryMove> lastMoves = board.GetLastMoves();
+            foreach (HistoryMove lastMove in lastMoves)
+            {
+                if (lastMove == null) continue;
+                bool result = true;
+                if (from.Length == lastMove.from.Length && to.Length == lastMove.to.Length)
+                {
+                    for (int i = 0; i < from.Length && result; i++)
+                    {
+                        if (from[i] != lastMove.from[i]) result = false;
+                        if (to[i] != lastMove.to[i]) result = false;
+                    }
+                }
+
+                if (result) return true;
+            }
+            return false;
+        }
+
     }
 
     public SpecialConditionLastMove(int[] f, int[] t)

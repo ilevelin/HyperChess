@@ -16,6 +16,11 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     bool ready = false;
 
+    public int GetPlayerAmmount()
+    {
+        return players.Count;
+    }
+
     public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color, int team)
     {
         if (players.Count == 0) delay = delayTime;

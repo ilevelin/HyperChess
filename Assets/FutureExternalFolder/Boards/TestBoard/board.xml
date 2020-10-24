@@ -45,33 +45,45 @@
       <value>3</value>
       <char>B</char>
     </piece>
+    <piece type="pawn">
+      <ID>ile.04</ID>
+      <value>3</value>
+      <char>P</char>
+    </piece>
   </pieces>
 
   <position>
-    <row>4K,4R,4B,4B,_,_,0,_,_,3B,3B,3R,3K</row>
-    <row>4R,0,0,0,_,_,0,_,_,0,0,0,3R</row>
-    <row>0,0,0,0,0,0,0,0,0,0,0,0,0</row>
-    <row>0,0,0,0,0,0,0,0,0,0,0,0,0</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
+    <row>4B,0,0,0,_,_,_,_,_,3B,3R,3K,3B</row>
+    <row>4K,0,0,0,_,_,0,_,_,3P,0,0,0</row>
+    <row>4R,0,0,0,0,0,0,0,0,0,0,0,0</row>
+    <row>4B,4P,0,0,0,0,0,0,0,0,0,0,0</row>
     <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
     <row>_,_,0,0,0,0,_,0,0,0,0,_,_</row>
-    <row>0,0,0,0,0,_,_,_,0,0,0,0,0</row>
+    <row>_,0,0,0,0,_,_,_,0,0,0,0,_</row>
     <row>_,_,0,0,0,0,_,0,0,0,0,_,_</row>
     <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>0,0,0,0,0,0,0,0,0,0,0,0,0</row>
-    <row>0,0,0,0,0,0,0,0,0,0,0,0,0</row>
-    <row>1R,0,0,0,_,_,0,_,_,0,0,0,2R</row>
-    <row>1K,1R,1B,1B,_,_,0,_,_,2B,2B,2R,2K</row>
+    <row>0,0,0,0,0,0,0,0,0,0,0,2P,2B</row>
+    <row>0,0,0,0,0,0,0,0,0,0,0,0,2R</row>
+    <row>0,0,0,1P,_,_,0,_,_,0,0,0,2K</row>
+    <row>1B,1K,1R,1B,_,_,_,_,_,0,0,0,2B</row>
   </position>
 
   <specials>
-    <!-- TO BE IMPLEMENTED -->
+    <move>
+      <check cell="4,12">hasnotmoved</check>
+      <movepiece>4,12-4,10</movepiece>
+    </move>
+    <move>
+      <check cell="2,4">hasnotmoved</check>
+      <movepiece>2,4-4,4</movepiece>
+    </move>
+    <move>
+      <check cell="10,2">hasnotmoved</check>
+      <movepiece>10,2-10,4</movepiece>
+    </move>
+    <move>
+      <check cell="12,10">hasnotmoved</check>
+      <movepiece>12,10-10,10</movepiece>
+    </move>
   </specials>
 </board>

@@ -14,6 +14,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
     bool onHold = false, isSelected = false;
     public List<Move> moves = new List<Move>();
     public List<int[]> avaliableMoves = new List<int[]>();
+    public List<int[]> avaliableSpecials = new List<int[]>();
     [SerializeField] GameObject possibleMovePrefab;
     GameObject possibleMoveParent;
 
@@ -260,6 +261,12 @@ public class PieceSquare2D : MonoBehaviour, Piece
                 }
             }
         }
+    }
+
+    public void ForceMoveTo(int[] newPosition)
+    {
+        position = newPosition;
+        RenderPiece();
     }
 
     public List<int[]> GetAttacks(PieceSquare2D[][] board, bool[][] existingCells)
@@ -511,6 +518,10 @@ public class PieceSquare2D : MonoBehaviour, Piece
     {
         HideMoves();
         foreach (int[] move in avaliableMoves)
+        {
+            GameObject.Instantiate(possibleMovePrefab, new Vector3(move[0], move[1]), new Quaternion(), possibleMoveParent.transform);
+        }
+        foreach (int[] move in avaliableSpecials)
         {
             GameObject.Instantiate(possibleMovePrefab, new Vector3(move[0], move[1]), new Quaternion(), possibleMoveParent.transform);
         }

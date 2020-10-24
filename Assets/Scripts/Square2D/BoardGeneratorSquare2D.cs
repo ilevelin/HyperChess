@@ -21,18 +21,6 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     public void StartAfterCoordinator()
     {
         mainLibrary = GameObject.FindGameObjectWithTag("MainLibrary").GetComponent<MainLibrary>();
-        /*
-        foreach (Tuple<char, string, int> import in importList)
-        {
-            PieceElement importedPiece;
-            if (mainLibrary.pieceLibrary.TryGetValue(import.Item2, out importedPiece))
-            {
-                pieces.Add(import.Item1, importedPiece.moves);
-                sprites.Add(import.Item1, importedPiece.image);
-                values.Add(import.Item1, import.Item3);
-            }
-        }
-        */
         LoadBoardFromLibrary("TestBoard");
 
         PlayerInfoCoordinator playerCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
@@ -51,6 +39,8 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
             if (boardToLoad.boardType == BoardType.Square2D)
             {
+                boardCoordinator.GetComponent<BoardCoordinatorSquare2D>().specialMoves = boardToLoad.specials;
+
                 foreach (char character in boardToLoad.pieceIDs.Keys.ToArray())
                 {
                     PieceImport pieceImport;
