@@ -647,46 +647,44 @@ public class MainLibrary : MonoBehaviour
                                             failed = true;
                                             continue;
                                         }
-                                        else
+                                        else if (!newBoard.pieceIDs.Keys.ToArray().Contains(cell[1]))
                                         {
-                                            if (!newBoard.pieceIDs.Keys.ToArray().Contains(cell[1]))
+                                            importLog.Add("[ERROR] Piece in a cell is not in the imported piece list.");
+                                            failed = true;
+                                            continue;
+                                        }
+
+                                        /* Este código deberia servir para identificar casillas de promoción, pero hay que arreglarlo para que se use correctamente */
+                                        Debug.Log(cell.Length);
+                                        if (cell.Length > 2)
+                                        {
+                                            for (int i = 2; i < cell.Length; i = i+2)
                                             {
-                                                importLog.Add("[ERROR] Piece in a cell is not in the imported piece list.");
-                                                failed = true;
-                                                continue;
-                                            }
-                                            else
-                                            {
-                                                if (cell.Length > 2)
+                                                if (cell[i] != ':')
                                                 {
-                                                    for (int i = 2; i < cell.Length; i = i + 2)
+                                                    Debug.Log("643");
+                                                    importLog.Add("[ERROR] Invalid character detected after the cell description.");
+                                                    failed = true;
+                                                    continue;
+                                                }
+                                                else
+                                                {
+                                                    try
                                                     {
-                                                        if (cell[i] != ':')
+                                                        int promote = int.Parse(cell[i + 1].ToString());
+                                                        Debug.Log(promote);
+                                                        if (promote - 1 >= newBoard.players.Count)
                                                         {
-                                                            Debug.Log("643");
-                                                            importLog.Add("[ERROR] Invalid character detected after the cell description.");
+                                                            importLog.Add("[ERROR] Promote player in a cell is outside the player list.");
                                                             failed = true;
                                                             continue;
                                                         }
-                                                        else
-                                                        {
-                                                            try
-                                                            {
-                                                                int promote = int.Parse(cell[i + 1].ToString());
-                                                                if (promote - 1 >= newBoard.players.Count)
-                                                                {
-                                                                    importLog.Add("[ERROR] Promote player in a cell is outside the player list.");
-                                                                    failed = true;
-                                                                    continue;
-                                                                }
-                                                            }
-                                                            catch
-                                                            {
-                                                                importLog.Add("[ERROR] Invalid character detected as player to asign a cell as promotable.");
-                                                                failed = true;
-                                                                continue;
-                                                            }
-                                                        }
+                                                    }
+                                                    catch
+                                                    {
+                                                        importLog.Add("[ERROR] Invalid character detected as player to asign a cell as promotable.");
+                                                        failed = true;
+                                                        continue;
                                                     }
                                                 }
                                             }
@@ -1065,7 +1063,6 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"specials\" element in the file. Skipping board.");
                 continue;
             }
-            // TODO
 
             /* LOADING IMAGE */
             bool isValid = true;

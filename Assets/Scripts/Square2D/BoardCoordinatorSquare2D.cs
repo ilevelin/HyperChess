@@ -26,6 +26,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     public bool[][] movedPieces;
     public bool[][] existingCells;
     public bool[][] attacked;
+    public bool[][][] promotionCells;
 
     private void Start()
     {
@@ -70,7 +71,18 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
 
         playerInterface.GetComponent<PlayerInfoCoordinator>().Initialize(this);
-        Debug.Log(specialMoves.Count);
+    }
+
+    public void EndTurn()
+    {
+        CheckPromotions();
+        CheckMoves();
+        CheckKingStatus();
+    }
+
+    public void CheckPromotions()
+    {
+
     }
 
     public void CheckMoves()
@@ -83,7 +95,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 {
                     board[i][j].avaliableMoves.Clear();
                     board[i][j].avaliableSpecials.Clear();
-                    if (board[i][j].player == (interfaceCoordinator.turn + 1)) // Modificar esto mas tarde para impedir al rey que se meta donde no toca.
+                    if (board[i][j].player == (interfaceCoordinator.turn + 1)) 
                         board[i][j].CheckMoves(board, existingCells);
                     else
                     {
@@ -112,6 +124,11 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 }
             }
         }
+    }
+
+    public void CheckKingStatus()
+    {
+
     }
 
     public void MousePressed(int[] location)
@@ -283,7 +300,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
                     moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
                     interfaceCoordinator.NextTurn(true);
-                    CheckMoves();
+                    EndTurn();
                 }
                 else
                 {
@@ -297,7 +314,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                     move.RunMove(this);
                                     moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
                                     interfaceCoordinator.NextTurn(true);
-                                    CheckMoves();
+                                    EndTurn();
                                     break;
                                 }
                     }

@@ -11,6 +11,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
     public int player;
     public int team;
     public int value;
+    public int direction;
     bool onHold = false, isSelected = false;
     public List<Move> moves = new List<Move>();
     public List<int[]> avaliableMoves = new List<int[]>();
@@ -24,8 +25,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int val, char charac, Sprite image)
+    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int dir, int val, char charac, Sprite image)
     {
+        direction = dir;
         position = initialPosition;
         coordinator.GetComponent<BoardCoordinator>().PieceSubscription(initialPosition, this);
         player = owner;
@@ -42,8 +44,25 @@ public class PieceSquare2D : MonoBehaviour, Piece
     public void CheckMoves(PieceSquare2D[][] board, bool[][] existingCells)
     {
         avaliableMoves.Clear();
-        foreach (Move move in moves)
+        foreach (Move baseMove in moves)
         {
+            /*
+                    //Cambiar move a savedMove o algo asi
+                    Move move = new Move();
+                    //Meter a move el move modificado por la dirección
+             */
+
+            Move move = new Move(new int[baseMove.move.Length], baseMove.style, baseMove.type);
+            for (int i = 0; i < baseMove.move.Length; i++)
+            {
+                int newindex = i + Math.Abs(direction) - 1;
+                if (newindex >= baseMove.move.Length) newindex -= baseMove.move.Length;
+                if (direction >= 0)
+                    move.move[newindex] = baseMove.move[i];
+                else
+                    move.move[newindex] = -baseMove.move[i];
+            }
+
             int x = position[0] + move.move[0];
             int y = position[1] + move.move[1];
             if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])

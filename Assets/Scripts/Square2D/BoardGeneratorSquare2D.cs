@@ -13,6 +13,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     List<Tuple<char, string, int>> importList;
     string[][] board;
     List<PlayerInfo> playerList = new List<PlayerInfo>();
+    List<int> playerDirections = new List<int>();
 
     Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
     Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
@@ -62,6 +63,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                         boardToLoad.players[i].color ?? default(Color),
                         i + 100
                         ));
+                    playerDirections.Add(boardToLoad.players[i].direction ?? 1);
                 }
             }
         }
@@ -143,7 +145,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
         RecalculateCamera();
 
-        boardCoordinator.GetComponent<BoardCoordinator>().CheckMoves();
+        boardCoordinator.GetComponent<BoardCoordinator>().EndTurn();
     }
 
     public PieceSquare2D CreatePiece(int[] cell, char piece, int player)
@@ -168,6 +170,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     playerList[player - 1].team,
                     playerList[player - 1].color,
                     pieceMoves,
+                    playerDirections[player - 1],
                     pieceValue,
                     piece,
                     pieceSprite

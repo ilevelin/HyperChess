@@ -5,7 +5,11 @@ using UnityEngine;
 public interface BoardCoordinator
 {
     void Initialize(int[] boardSize);
+    void EndTurn();
+
+    void CheckPromotions();
     void CheckMoves();
+    void CheckKingStatus();
 
     void MousePressed(int[] location);
     void MouseReleased(int[] location);
