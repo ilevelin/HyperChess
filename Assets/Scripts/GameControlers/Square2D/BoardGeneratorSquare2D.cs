@@ -18,6 +18,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
     Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
     Dictionary<char, int> values = new Dictionary<char, int>();
+    Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
 
     public void StartAfterCoordinator()
     {
@@ -51,6 +52,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     values.Add(character, pieceImport.value);
                     sprites.Add(character, pieceElement.image);
                     pieces.Add(character, pieceElement.moves);
+                    types.Add(character, pieceImport.type);
                 }
 
                 board = ((BoardSquare2D)boardToLoad.initialState).board;
@@ -64,6 +66,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                         i + 100
                         ));
                     playerDirections.Add(boardToLoad.players[i].direction ?? 1);
+                    boardCoordinator.GetComponent<BoardCoordinatorSquare2D>().promotionCells.Add(new List<int[]>());
                 }
             }
         }
@@ -127,11 +130,23 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
                     tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { i, j });
 
-                    if (board[boardHeight - 1 - j][i] != "0")
+                    if (board[boardHeight - 1 - j][i][0] != '0')
                     {
                         char pieceChar = board[boardHeight - 1 - j][i][1];
                         int pieceOwner = int.Parse(board[boardHeight - 1 - j][i][0].ToString());
                         CreatePiece(new int[] { i, j }, pieceChar, pieceOwner);
+                    }
+
+                    if(board[boardHeight - 1 - j][i].Contains(':'))
+                    {
+                        try
+                        {
+                            for (int n = board[boardHeight - 1 - j][i].IndexOf(':'); n < board[boardHeight - 1 - j][i].Length; n = board[boardHeight - 1 - j][i].Substring(n).IndexOf(':'))
+                            {
+                                boardCoordinator.GetComponent<BoardCoordinatorSquare2D>().promotionCells[int.Parse(board[boardHeight - 1 - j][i][n + 1].ToString()) - 1].Add(new int[] { i, j });
+                            }
+                        }
+                        catch { }
                     }
 
                 }
@@ -145,7 +160,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
         RecalculateCamera();
 
-        boardCoordinator.GetComponent<BoardCoordinator>().EndTurn();
+        boardCoordinator.GetComponent<BoardCoordinator>().CheckMoves();
     }
 
     public PieceSquare2D CreatePiece(int[] cell, char piece, int player)
@@ -159,9 +174,11 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 List<Move> pieceMoves;
                 int pieceValue;
                 Sprite pieceSprite;
+                PieceType pieceType;
                 pieces.TryGetValue(piece, out pieceMoves);
                 values.TryGetValue(piece, out pieceValue);
                 sprites.TryGetValue(piece, out pieceSprite);
+                types.TryGetValue(piece, out pieceType);
 
                 newPiece.GetComponent<PieceSquare2D>().Initialize(
                     new int[] { cell[0], cell[1] },
@@ -173,6 +190,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     playerDirections[player - 1],
                     pieceValue,
                     piece,
+                    pieceType,
                     pieceSprite
                     );
 

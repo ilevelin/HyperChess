@@ -18,6 +18,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
     public List<int[]> avaliableSpecials = new List<int[]>();
     [SerializeField] GameObject possibleMovePrefab;
     GameObject possibleMoveParent;
+    public PieceType type;
 
     private void Update()
     {
@@ -25,7 +26,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
             transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
     }
 
-    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int dir, int val, char charac, Sprite image)
+    public void Initialize(int[] initialPosition, GameObject coordinator, int owner, int ownerTeam, Color ownerColor, List<Move> pieceMoves, int dir, int val, char charac, PieceType piecetype, Sprite image)
     {
         direction = dir;
         position = initialPosition;
@@ -38,6 +39,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
         value = val;
         possibleMoveParent = GameObject.FindWithTag("PossibleMoves");
         character = charac;
+        type = piecetype;
         RenderPiece();
     }
 
@@ -46,12 +48,6 @@ public class PieceSquare2D : MonoBehaviour, Piece
         avaliableMoves.Clear();
         foreach (Move baseMove in moves)
         {
-            /*
-                    //Cambiar move a savedMove o algo asi
-                    Move move = new Move();
-                    //Meter a move el move modificado por la dirección
-             */
-
             Move move = new Move(new int[baseMove.move.Length], baseMove.style, baseMove.type);
             for (int i = 0; i < baseMove.move.Length; i++)
             {

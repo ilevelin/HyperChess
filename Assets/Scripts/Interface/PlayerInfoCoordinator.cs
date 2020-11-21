@@ -12,6 +12,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
     List<int> times = new List<int>();
     BoardCoordinator boardCoordinator;
     public int turn { private set; get; } = 0;
+    public int lastTurn { private set; get; }
     int delay = 0;
 
     bool ready = false;
@@ -106,6 +107,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
             controllers[turn].UpdateTimer(times[turn]);
         }
 
+        lastTurn = turn;
         int tmp = turn;
         bool able = true;
 

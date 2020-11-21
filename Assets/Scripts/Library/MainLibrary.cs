@@ -22,7 +22,8 @@ public class MainLibrary : MonoBehaviour
 
     void Start()
     {
-        /*** INIT ***/
+        /*** INIT **********************************************************************************************************************************/
+        /*******************************************************************************************************************************************/
         pieceLibrary = new Dictionary<string, PieceElement>();
         boardLibrary = new Dictionary<string, BoardElement>();
 
@@ -31,7 +32,8 @@ public class MainLibrary : MonoBehaviour
             boardsFolder = externalFolderLocation + "/Boards";
         List<string> importLog = new List<string>();
 
-        /*** LOADING PIECES ***/
+        /*** LOADING PIECES ************************************************************************************************************************/
+        /*******************************************************************************************************************************************/
         importLog.Add("╔════════════════════════════╗");
         importLog.Add("║      IMPORTING PIECES      ║");
         importLog.Add("╚════════════════════════════╝");
@@ -39,7 +41,7 @@ public class MainLibrary : MonoBehaviour
         string[] folders = System.IO.Directory.GetDirectories(piecesFolder);
         foreach (string folder in folders)
         {
-            /* LOADING XML */
+            /*** LOADING XML ***********************************************************************************************************************/
             string folderName = folder.Substring(piecesFolder.Length + 1);
 
             if (folderName.Equals("TemplatePiece")) continue;
@@ -59,7 +61,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* READING METADATA */
+            /*** READING METADATA ******************************************************************************************************************/
             try
             {
                 XmlNodeList metadataList = piece.GetElementsByTagName("metadata")[0].ChildNodes;
@@ -102,7 +104,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* READING MOVES */
+            /*** READING MOVES *********************************************************************************************************************/
             try
             {
                 XmlNodeList movesList = piece.GetElementsByTagName("moves")[0].ChildNodes;
@@ -110,7 +112,8 @@ public class MainLibrary : MonoBehaviour
                 {
                     Move newMove = new Move();
 
-                    switch (move.Name) // Style
+                    // Style ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    switch (move.Name) 
                     {
                         case "infinite":
                             newMove.style = Style.INFINITE;
@@ -129,7 +132,8 @@ public class MainLibrary : MonoBehaviour
                             continue;
                     }
 
-                    if (move.Attributes.Count == 1) // Type
+                    // Type /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    if (move.Attributes.Count == 1) 
                     {
                         if (move.Attributes[0].Name == "type")
                         {
@@ -161,7 +165,8 @@ public class MainLibrary : MonoBehaviour
                         continue;
                     }
 
-                    if (move.InnerText.Length != 0) // Move Coords
+                    // Move Coords //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    if (move.InnerText.Length != 0) 
                     {
                         string text = move.InnerText;
                         List<int> moveCoords = new List<int>();
@@ -226,7 +231,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING IMAGE */
+            /*** LOADING IMAGE *********************************************************************************************************************/
             bool isValid = true;
 
             try
@@ -242,44 +247,57 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not load icon.png. Check that the file does exists and it is spelled correctly. Remember it is case sensitive.");
             }
 
-            /* PIECE CHECKING */
-            if (newID.Length == 0) // ID is empty?
+            /*** PIECE CHECKING ********************************************************************************************************************/
+
+            // ID is empty?
+            if (newID.Length == 0) 
             {
                 importLog.Add("[ERROR] The ID cannot be empty.");
                 isValid = false;
             }
-            else if (pieceLibrary.ContainsKey(newID)) // ID in use?
+
+            // ID in use?
+            else if (pieceLibrary.ContainsKey(newID)) 
             {
                 PieceElement otherPiece;
                 pieceLibrary.TryGetValue(newID, out otherPiece);
                 importLog.Add("[ERROR] The ID \"" + newID + "\" is already used by the piece with the name \"" + otherPiece.name + "\".");
                 isValid = false;
             }
-            if (newPiece.name.Length == 0) // Has a name?
+
+            // Has a name?
+            if (newPiece.name.Length == 0)
             {
                 importLog.Add("[ERROR] The name cannot be empty.");
                 isValid = false;
             }
-            if (newPiece.boardType == BoardType.NULL) // Valid BoardType?
+
+            // Valid BoardType?
+            if (newPiece.boardType == BoardType.NULL) 
             {
                 importLog.Add("[ERROR] The boardType is invalid. Remember it is case sensitive.");
                 isValid = false;
             }
-            if (newPiece.moves.Count == 0) // Has moves?
+
+            // Has moves?
+            if (newPiece.moves.Count == 0) 
             {
                 importLog.Add("[ERROR] No moves were saved.");
                 isValid = false;
             }
 
-            /* SAVING PIECE */
-            if (isValid) // ALL OK
+            /*** SAVING PIECE **********************************************************************************************************************/
+
+            // ALL OK
+            if (isValid) 
             {
                 pieceLibrary.Add(newID, newPiece);
                 importLog.Add("[INFO] Piece added to the library successfully.");
             }
         }
-
-        /*** LOADING BOARDS ***/
+        
+        /*** LOADING BOARDS ************************************************************************************************************************/
+        /*******************************************************************************************************************************************/
         importLog.Add("");
         importLog.Add("");
         importLog.Add("╔════════════════════════════╗");
@@ -289,7 +307,7 @@ public class MainLibrary : MonoBehaviour
         folders = System.IO.Directory.GetDirectories(boardsFolder);
         foreach (string folder in folders)
         {
-            /* LOADING XML */
+            /*** LOADING XML ***********************************************************************************************************************/
             string folderName = folder.Substring(piecesFolder.Length + 1);
 
             if (folderName.Equals("TemplateBoard")) continue;
@@ -309,7 +327,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING METADATA */
+            /*** LOADING METADATA ******************************************************************************************************************/
             try
             {
                 XmlNodeList metadataList = board.GetElementsByTagName("metadata")[0].ChildNodes;
@@ -349,7 +367,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING PLAYERS */
+            /*** LOADING PLAYERS *******************************************************************************************************************/
             bool failed = false;
             try
             {
@@ -363,11 +381,13 @@ public class MainLibrary : MonoBehaviour
                         continue;
                     }
 
+                    // Import information
                     PlayerImport newPlayer = new PlayerImport();
                     foreach (XmlNode playerInfo in player.ChildNodes)
                     {
                         switch (playerInfo.Name)
                         {
+                            // TEAM /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                             case "team":
                                 int team = 0;
                                 if (playerInfo.InnerText == "-")
@@ -391,6 +411,8 @@ public class MainLibrary : MonoBehaviour
                                     }
                                 newPlayer.team = team;
                                 break;
+
+                            // COLOR ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                             case "color":
                                 try
                                 {
@@ -407,6 +429,8 @@ public class MainLibrary : MonoBehaviour
                                 }
 
                                 break;
+
+                            // DIRECTION ////////////////////////////////////////////////////////////////////////////////////////////////////////////
                             case "direction":
                                 try
                                 {
@@ -419,11 +443,15 @@ public class MainLibrary : MonoBehaviour
                                     continue;
                                 }
                                 break;
+
+                            // ERROR ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                             default:
                                 importLog.Add("[WARNING] \"" + playerInfo.Name + "\" is not a valid entry for a player.");
                                 continue;
                         }
                     }
+
+                    // Check all info is on place
                     if (newPlayer.direction == null)
                     {
                         importLog.Add("[ERROR] A player doesn't have a direction. Skipping board.");
@@ -447,6 +475,7 @@ public class MainLibrary : MonoBehaviour
                         newBoard.players.Add(newPlayer);
                     }
                 }
+                
                 if (failed)
                 {
                     importLog.Add("[ERROR] At least one player entry is not complete. Skipping board.");
@@ -465,7 +494,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING PIECES */
+            /*** LOADING PIECES ********************************************************************************************************************/
             try
             {
                 XmlNodeList pieceList = board.GetElementsByTagName("pieces")[0].ChildNodes;
@@ -580,7 +609,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING POSITION */
+            /*** LOADING POSITION ******************************************************************************************************************/
             try
             {
                 XmlNodeList positionRows = board.GetElementsByTagName("position")[0].ChildNodes;
@@ -588,7 +617,7 @@ public class MainLibrary : MonoBehaviour
                 switch (newBoard.boardType)
                 {
                     case BoardType.Square2D:
-                        // Import Strings
+                        // Import Strings ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                         List<List<string>> initialPosition = new List<List<string>>();
                         int columns = -1;
                         foreach (XmlNode row in positionRows)
@@ -633,69 +662,70 @@ public class MainLibrary : MonoBehaviour
                                     initialPosition.Add(newRow);
                             }
                         }
-                        // Checking Strings
+                        // Checking Strings /////////////////////////////////////////////////////////////////////////////////////////////////////////
                         foreach (List<string> row in initialPosition)
                             foreach (string cell in row)
                             {
-                                if (cell[0] != '_' && cell[0] != '0')
-                                    try
+                                if (cell[0] != '_')
+                                {
+                                    if (cell[0] != '0')
                                     {
-                                        int owner = int.Parse(cell[0].ToString());
-                                        if (owner - 1 >= newBoard.players.Count)
+                                        try
                                         {
-                                            importLog.Add("[ERROR] Player owner in a cell is outside the player list.");
-                                            failed = true;
-                                            continue;
-                                        }
-                                        else if (!newBoard.pieceIDs.Keys.ToArray().Contains(cell[1]))
-                                        {
-                                            importLog.Add("[ERROR] Piece in a cell is not in the imported piece list.");
-                                            failed = true;
-                                            continue;
-                                        }
 
-                                        /* Este código deberia servir para identificar casillas de promoción, pero hay que arreglarlo para que se use correctamente */
-                                        Debug.Log(cell.Length);
-                                        if (cell.Length > 2)
-                                        {
-                                            for (int i = 2; i < cell.Length; i = i+2)
+                                            int owner = int.Parse(cell[0].ToString());
+                                            if (owner - 1 >= newBoard.players.Count)
                                             {
-                                                if (cell[i] != ':')
+                                                importLog.Add("[ERROR] Player owner in a cell is outside the player list.");
+                                                failed = true;
+                                                continue;
+                                            }
+                                            else if (!newBoard.pieceIDs.Keys.ToArray().Contains(cell[1]))
+                                            {
+                                                importLog.Add("[ERROR] Piece in a cell is not in the imported piece list.");
+                                                failed = true;
+                                                continue;
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            importLog.Add("[ERROR] Invalid character detected in a cell of the initial position.");
+                                            failed = true;
+                                            continue;
+                                        }
+                                    }
+                                    if (cell.Contains(':'))
+                                    {
+                                        for (int i = cell.IndexOf(':'); i < cell.Length; i = i + 2)
+                                        {
+                                            if (cell[i] != ':')
+                                            {
+                                                importLog.Add("[ERROR] Invalid character detected after the cell description.");
+                                                failed = true;
+                                                continue;
+                                            }
+                                            else
+                                            {
+                                                try
                                                 {
-                                                    Debug.Log("643");
-                                                    importLog.Add("[ERROR] Invalid character detected after the cell description.");
-                                                    failed = true;
-                                                    continue;
-                                                }
-                                                else
-                                                {
-                                                    try
+                                                    int promote = int.Parse(cell[i + 1].ToString());
+                                                    if (promote - 1 >= newBoard.players.Count)
                                                     {
-                                                        int promote = int.Parse(cell[i + 1].ToString());
-                                                        Debug.Log(promote);
-                                                        if (promote - 1 >= newBoard.players.Count)
-                                                        {
-                                                            importLog.Add("[ERROR] Promote player in a cell is outside the player list.");
-                                                            failed = true;
-                                                            continue;
-                                                        }
-                                                    }
-                                                    catch
-                                                    {
-                                                        importLog.Add("[ERROR] Invalid character detected as player to asign a cell as promotable.");
+                                                        importLog.Add("[ERROR] Promote player in a cell is outside the player list.");
                                                         failed = true;
                                                         continue;
                                                     }
                                                 }
+                                                catch
+                                                {
+                                                    importLog.Add("[ERROR] Invalid character detected as player to asign a cell as promotable.");
+                                                    failed = true;
+                                                    continue;
+                                                }
                                             }
                                         }
                                     }
-                                    catch
-                                    {
-                                        importLog.Add("[ERROR] Invalid character detected in a cell of the initial position.");
-                                        failed = true;
-                                        continue;
-                                    }
+                                }
                             }
                         BoardSquare2D init = new BoardSquare2D();
                         init.board = new string[initialPosition.Count][];
@@ -715,7 +745,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING SPECIALS */
+            /*** LOADING SPECIALS ******************************************************************************************************************/
             try
             {
                 bool skipboard = false;
@@ -1064,7 +1094,7 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /* LOADING IMAGE */
+            /*** LOADING IMAGE *********************************************************************************************************************/
             bool isValid = true;
 
             try
@@ -1079,7 +1109,7 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not load icon.png. Check that the file does exists and it is spelled correctly. Remember it is case sensitive.");
             }
 
-            /* BOARD CHECKING */
+            /*** BOARD CHECKING ********************************************************************************************************************/
             if (newName.Length == 0) // Has name?
             {
                 importLog.Add("[ERROR] The ID cannot be empty.");
@@ -1093,7 +1123,7 @@ public class MainLibrary : MonoBehaviour
                 isValid = false;
             }
 
-            /* SAVING BOARD */
+            /*** SAVING BOARD **********************************************************************************************************************/
             if (isValid)
             {
                 boardLibrary.Add(newName, newBoard);
@@ -1102,9 +1132,10 @@ public class MainLibrary : MonoBehaviour
 
         }
 
-        /*** LAST INIT ***/
+        /*** LAST INIT *****************************************************************************************************************************/
+        /*******************************************************************************************************************************************/
         GameObject.DontDestroyOnLoad(gameObject);
-        foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
+        //foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
     }
 
     public PieceElement GetPiece(string id)

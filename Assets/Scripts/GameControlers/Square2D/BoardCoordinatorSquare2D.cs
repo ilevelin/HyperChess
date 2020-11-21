@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 {
     [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab, playerInterface, boardGeneratorObject;
+    [SerializeField] PromotionController promotionController;
     PlayerInfoCoordinator interfaceCoordinator;
     BoardGeneratorSquare2D boardGenerator;
 
@@ -21,12 +23,12 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     List<SpecialMove> availableSpecials = new List<SpecialMove>();
     public List<SpecialMove> specialMoves = new List<SpecialMove>();
     public List<HistoryMove> moveHistory = new List<HistoryMove>();
+    public List<List<int[]>> promotionCells = new List<List<int[]>>();
 
     public PieceSquare2D[][] board;
     public bool[][] movedPieces;
     public bool[][] existingCells;
     public bool[][] attacked;
-    public bool[][][] promotionCells;
 
     private void Start()
     {
@@ -45,6 +47,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 selectedCellObject.transform.position = new Vector3(selectedCell[0], selectedCell[1]);
         }
     }
+
+
 
     public void Initialize(int[] boardSize)
     {
@@ -75,14 +79,39 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
     public void EndTurn()
     {
-        CheckPromotions();
-        CheckMoves();
-        CheckKingStatus();
+        if (CheckPromotions())
+        {
+            promotionController.PromotePiece(this);
+        }
+        else
+        {
+            interfaceCoordinator.NextTurn(true);
+            CheckMoves();
+            CheckKing();
+        }
     }
 
-    public void CheckPromotions()
+    public void AfterPromotionEndTurn(char selectedPromotion)
     {
+        // Cambiar pieza aquí
 
+        interfaceCoordinator.NextTurn(true);
+        CheckMoves();
+        CheckKing();
+    }
+
+    public bool CheckPromotions()
+    {
+        for (int i = 0; i < board.Length; i++)
+            for (int j = 0; j < board[i].Length; j++)
+                if (board[i][j] != null)
+                    if (board[i][j].type == PieceType.PAWN && board[i][j].player-1 == interfaceCoordinator.turn)
+                        for (int n = 0; n < promotionCells[interfaceCoordinator.turn].Count; n++)
+                            if (promotionCells[interfaceCoordinator.turn][n].SequenceEqual(new int[] { i, j }))
+                            {
+                                return true;
+                            }
+        return false;
     }
 
     public void CheckMoves()
@@ -126,10 +155,12 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
     }
 
-    public void CheckKingStatus()
+    public void CheckKing()
     {
 
     }
+
+
 
     public void MousePressed(int[] location)
     {
@@ -282,6 +313,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         
     }
 
+
+
     public void MovePiece(int[] from, int[] to)
     {
 
@@ -299,7 +332,6 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                     movedPieces[to[0]][to[1]] = true;
 
                     moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
-                    interfaceCoordinator.NextTurn(true);
                     EndTurn();
                 }
                 else
@@ -313,7 +345,6 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                 {
                                     move.RunMove(this);
                                     moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
-                                    interfaceCoordinator.NextTurn(true);
                                     EndTurn();
                                     break;
                                 }
@@ -322,6 +353,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
             }
     }
+
+
 
     public int GetScoreOfPlayer(int i)
     {

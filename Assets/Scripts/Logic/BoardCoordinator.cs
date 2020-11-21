@@ -6,10 +6,11 @@ public interface BoardCoordinator
 {
     void Initialize(int[] boardSize);
     void EndTurn();
+    void AfterPromotionEndTurn(char selectedPromotion);
 
-    void CheckPromotions();
+    bool CheckPromotions();
     void CheckMoves();
-    void CheckKingStatus();
+    void CheckKing();
 
     void MousePressed(int[] location);
     void MouseReleased(int[] location);
