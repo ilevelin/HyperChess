@@ -6,7 +6,7 @@ using UnityEngine;
 public class PieceSquare2D : MonoBehaviour, Piece
 {
 
-    int[] position = null;
+    public int[] position = null;
     public char character;
     public int player;
     public int team;
@@ -40,6 +40,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
         possibleMoveParent = GameObject.FindWithTag("PossibleMoves");
         character = charac;
         type = piecetype;
+        if (piecetype == PieceType.KING) coordinator.GetComponent<BoardCoordinator>().KingSuscription(this);
         RenderPiece();
     }
 

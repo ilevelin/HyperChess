@@ -22,11 +22,13 @@ public class SpecialMove
             if (!cond.Check(board)) return false;
         return true;
     }
+
     public void RunMove(BoardCoordinator board)
     {
         foreach (SpecialResult res in results)
             res.Modify(board);
     }
+
     public Tuple<int[],int[]> GetMove()
     {
         foreach (SpecialResult res in results)
@@ -40,7 +42,7 @@ public class SpecialMove
     }
 }
 
-/* CONDITIONS */
+/* CONDITIONS *************************************************************************************/
 
 public interface SpecialCondition
 {
@@ -187,7 +189,7 @@ public class SpecialConditionLastMove : SpecialCondition
     }
 }
 
-/* RESULTS */
+/* RESULTS *********************************************************************************/
 
 public interface SpecialResult
 {

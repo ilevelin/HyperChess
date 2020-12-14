@@ -15,10 +15,10 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     List<PlayerInfo> playerList = new List<PlayerInfo>();
     List<int> playerDirections = new List<int>();
 
-    Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
-    Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
-    Dictionary<char, int> values = new Dictionary<char, int>();
-    Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
+    public Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
+    public Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
+    public Dictionary<char, int> values = new Dictionary<char, int>();
+    public Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
 
     public void StartAfterCoordinator()
     {
@@ -72,7 +72,6 @@ public class BoardGeneratorSquare2D : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.ToString());
         }
     }
 
@@ -88,11 +87,6 @@ public class BoardGeneratorSquare2D : MonoBehaviour
             }
         }
         RenderBoard();
-    }
-
-    private void LateUpdate()
-    {
-
     }
 
     void RecalculateCamera()

@@ -35,12 +35,12 @@
       <value>10</value>
       <char>K</char>
     </piece>
-    <piece>
+    <piece type="upgrade">
       <ID>ile.01</ID>
       <value>5</value>
       <char>R</char>
     </piece>
-    <piece>
+    <piece type="upgrade">
       <ID>ile.02</ID>
       <value>3</value>
       <char>B</char>

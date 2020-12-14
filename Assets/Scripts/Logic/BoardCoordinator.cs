@@ -7,6 +7,7 @@ public interface BoardCoordinator
     void Initialize(int[] boardSize);
     void EndTurn();
     void AfterPromotionEndTurn(char selectedPromotion);
+    void KingSuscription(Piece newKing);
 
     bool CheckPromotions();
     void CheckMoves();
@@ -22,7 +23,7 @@ public interface BoardCoordinator
     void RightMouseReleased(int[] location);
 
     int GetScoreOfPlayer(int i);
-
+    Dictionary<char, Sprite> GetPromotablePieces();
     Piece GetPieceFromCell(int[] cell);
     bool? DidPieceMoved(int[] cell);
     void CreatePiece(int[] cell, char pieceChar);

@@ -321,7 +321,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8c428e285a0ec844917eba39288e4d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  posiblePromotions: 6100620063006400650066006700680069006a006b00
   rowContainer: {fileID: 1201463816}
   blurGameObject: {fileID: 1310766795}
   rowPrefab: {fileID: 5207158943757409046, guid: 2259f4092c58ccb4fbcdf2d916175845,
@@ -376,7 +375,7 @@ GameObject:
   - component: {fileID: 1012686932}
   m_Layer: 0
   m_Name: BoardCoordinator
-  m_TagString: Untagged
+  m_TagString: BoardCoordinator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -709,6 +708,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -895,6 +895,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.25490198, g: 0.25490198, b: 0.25490198, a: 0.5019608}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -968,6 +969,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
