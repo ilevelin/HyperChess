@@ -44,7 +44,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
         RenderPiece();
     }
 
-    public void CheckMoves(PieceSquare2D[][] board, bool[][] existingCells)
+    public void CheckMoves(PieceSquare2D[,] board, bool[,] existingCells)
     {
         avaliableMoves.Clear();
         foreach (Move baseMove in moves)
@@ -62,9 +62,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
 
             int x = position[0] + move.move[0];
             int y = position[1] + move.move[1];
-            if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
+            if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x,y])
             {
-                PieceSquare2D objectiveCell = board[x][y];
+                PieceSquare2D objectiveCell = board[x,y];
                 switch (move.style)
                 {
                     case Style.FINITE: // FINITE ====================================
@@ -81,7 +81,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 {
                                     int tmpX = position[0] + ((move.move[0] / Math.Abs(move.move[minorAxis])) * i);
                                     int tmpY = position[1] + ((move.move[1] / Math.Abs(move.move[minorAxis])) * i);
-                                    if (!(board[tmpX][tmpY] is null))
+                                    if (!(board[tmpX,tmpY] is null))
                                     {
                                         blocked = true;
                                     }
@@ -93,7 +93,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                             {
                                 int tmpX = i + position[0];
                                 int tmpY = i + position[1];
-                                if (!(board[tmpX][tmpY] is null))
+                                if (!(board[tmpX,tmpY] is null))
                                 {
                                     blocked = true;
                                 }
@@ -138,7 +138,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                     {
                                         int tmpX = tmpPosition2[0] + ((move.move[0] / Math.Abs(move.move[minorAxis1])) * i);
                                         int tmpY = tmpPosition2[1] + ((move.move[1] / Math.Abs(move.move[minorAxis1])) * i);
-                                        if (!(board[tmpX][tmpY] is null))
+                                        if (!(board[tmpX,tmpY] is null))
                                         {
                                             blocked1 = true;
                                         }
@@ -150,7 +150,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 {
                                     int tmpX = tmpPosition2[0] + i;
                                     int tmpY = tmpPosition2[1] + i;
-                                    if (!(board[tmpX][tmpY] is null))
+                                    if (!(board[tmpX,tmpY] is null))
                                     {
                                         blocked1 = true;
                                     }
@@ -195,9 +195,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition2 = new int[] { x, y };
                                 x = tmpPosition2[0] + move.move[0];
                                 y = tmpPosition2[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
+                                if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x, y])
                                 {
-                                    objectiveCell = board[x][y];
+                                    objectiveCell = board[x,y];
                                 }
                                 else
                                     possible2 = false;
@@ -249,8 +249,8 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition1 = new int[] { x, y };
                                 x = tmpPosition1[0] + move.move[0];
                                 y = tmpPosition1[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
-                                    objectiveCell = board[x][y];
+                                if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x, y])
+                                    objectiveCell = board[x,y];
                                 else
                                     possible1 = false;
                             }
@@ -285,7 +285,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
         RenderPiece();
     }
 
-    public List<int[]> GetAttacks(PieceSquare2D[][] board, bool[][] existingCells)
+    public List<int[]> GetAttacks(PieceSquare2D[,] board, bool[,] existingCells)
     {
         List<int[]> attacking = new List<int[]>();
         foreach (Move move in moves)
@@ -293,9 +293,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
             if (move.type == Type.MOVE) continue;
             int x = position[0] + move.move[0];
             int y = position[1] + move.move[1];
-            if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
+            if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x, y])
             {
-                PieceSquare2D objectiveCell = board[x][y];
+                PieceSquare2D objectiveCell = board[x,y];
                 switch (move.style)
                 {
                     case Style.FINITE: // FINITE ====================================
@@ -312,7 +312,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 {
                                     int tmpX = position[0] + ((move.move[0] / Math.Abs(move.move[minorAxis])) * i);
                                     int tmpY = position[1] + ((move.move[1] / Math.Abs(move.move[minorAxis])) * i);
-                                    if (!(board[tmpX][tmpY] is null))
+                                    if (!(board[tmpX,tmpY] is null))
                                     {
                                         blocked = true;
                                     }
@@ -324,7 +324,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                             {
                                 int tmpX = i + position[0];
                                 int tmpY = i + position[1];
-                                if (!(board[tmpX][tmpY] is null))
+                                if (!(board[tmpX,tmpY] is null))
                                 {
                                     blocked = true;
                                 }
@@ -365,7 +365,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                     {
                                         int tmpX = tmpPosition2[0] + ((move.move[0] / Math.Abs(move.move[minorAxis1])) * i);
                                         int tmpY = tmpPosition2[1] + ((move.move[1] / Math.Abs(move.move[minorAxis1])) * i);
-                                        if (!(board[tmpX][tmpY] is null))
+                                        if (!(board[tmpX,tmpY] is null))
                                         {
                                             blocked1 = true;
                                         }
@@ -377,7 +377,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 {
                                     int tmpX = tmpPosition2[0] + i;
                                     int tmpY = tmpPosition2[1] + i;
-                                    if (!(board[tmpX][tmpY] is null))
+                                    if (!(board[tmpX,tmpY] is null))
                                     {
                                         blocked1 = true;
                                     }
@@ -416,9 +416,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition2 = new int[] { x, y };
                                 x = tmpPosition2[0] + move.move[0];
                                 y = tmpPosition2[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
+                                if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x, y])
                                 {
-                                    objectiveCell = board[x][y];
+                                    objectiveCell = board[x,y];
                                 }
                                 else
                                     possible2 = false;
@@ -462,8 +462,8 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 tmpPosition1 = new int[] { x, y };
                                 x = tmpPosition1[0] + move.move[0];
                                 y = tmpPosition1[1] + move.move[1];
-                                if ((x >= 0) && (x < board.Length) && (y >= 0) && (y < board[0].Length) && existingCells[x][y])
-                                    objectiveCell = board[x][y];
+                                if ((x >= 0) && (x < board.GetLength(0)) && (y >= 0) && (y < board.GetLength(1)) && existingCells[x, y])
+                                    objectiveCell = board[x,y];
                                 else
                                     possible1 = false;
                             }

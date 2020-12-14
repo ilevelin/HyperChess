@@ -147,7 +147,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 else
                 {
                     if (boardCoordinator.GetComponent<BoardCoordinator>() is BoardCoordinatorSquare2D)
-                        ((BoardCoordinatorSquare2D)boardCoordinator.GetComponent<BoardCoordinator>()).existingCells[i][boardHeight - 1 - j] = false;
+                        ((BoardCoordinatorSquare2D)boardCoordinator.GetComponent<BoardCoordinator>()).existingCells[i,boardHeight - 1 - j] = false;
                 }
 
             }
