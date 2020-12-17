@@ -8,7 +8,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
 {
     [SerializeField] GameObject playerInfoPrefab, playerTurnArrow;
     List<PlayerInfoController> controllers = new List<PlayerInfoController>();
-    List<PlayerInfo> players = new List<PlayerInfo>();
+    public List<PlayerInfo> players = new List<PlayerInfo>();
     List<int> times = new List<int>();
     BoardCoordinator boardCoordinator;
     public int turn { private set; get; } = 0;
@@ -50,7 +50,23 @@ public class PlayerInfoCoordinator : MonoBehaviour
         controllers.Add(tmp.GetComponent<PlayerInfoController>());
         controllers[controllers.Count - 1].Initialize(player.color, player.name, player.startingTime);
     }
-    
+
+    public void EliminatePlayer(int player)
+    {
+        players[player].alive = false;
+        controllers[player].EliminatePlayer();
+        if (player == turn) boardCoordinator.EndTurn();
+    }
+
+    public void EliminateActualPlayer()
+    {
+        players[turn].alive = false;
+        controllers[turn].EliminatePlayer();
+        Debug.Log("ELIMINATED");
+        boardCoordinator.EndTurn();
+        Debug.Log("ENDIGNTURN");
+    }
+
     internal void Initialize(BoardCoordinator bc)
     {
         boardCoordinator = bc;
@@ -82,11 +98,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
             }
 
             if (times[turn] <= 0)
-            {
-                players[turn].alive = false;
-                controllers[turn].EliminatePlayer();
-                NextTurn(false);
-            }
+                EliminateActualPlayer();
         }
         else
             NextTurn(false);

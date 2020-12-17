@@ -26,9 +26,17 @@ public interface BoardCoordinator
     Dictionary<char, Sprite> GetPromotablePieces();
     Piece GetPieceFromCell(int[] cell);
     bool? DidPieceMoved(int[] cell);
+
     void CreatePiece(int[] cell, char pieceChar);
     void RemovePiece(int[] cell);
     void MovePieceForced(int[] from, int[] to);
+
+    void InitSimulation();
+    void EndSimulation();
+    void SimulateCreatePiece(int[] cell, char pieceChar);
+    void SimulateRemovePiece(int[] cell);
+    void SimulateMovePiece(int[] from, int[] to);
+
     bool IsCellUnderAttack(int[] cell);
 
     List<HistoryMove> GetLastMoves();

@@ -8,7 +8,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 {
     [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab, playerInterface, boardGeneratorObject;
     [SerializeField] PromotionController promotionController;
-    PlayerInfoCoordinator interfaceCoordinator;
+    PlayerInfoCoordinator turnCoordinator;
     BoardGeneratorSquare2D boardGenerator;
 
     int[] pressCoords = null;
@@ -36,7 +36,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
     private void Start()
     {
-        interfaceCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
+        turnCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
         boardGenerator = boardGeneratorObject.GetComponent<BoardGeneratorSquare2D>();
         boardGenerator.StartAfterCoordinator();
         promotionController.Initialize();
@@ -66,12 +66,14 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         if (boardSize.Length != 2) return;
         {
             board = new PieceSquare2D[boardSize[1], boardSize[0]];
+            boardSimulation = new PieceSquare2D[boardSize[1], boardSize[0]];
             movedPieces = new bool[boardSize[1], boardSize[0]];
             existingCells = new bool[boardSize[1], boardSize[0]];
             attacked = new bool[boardSize[1], boardSize[0]];
             for (int i = 0; i < boardSize[1]; i++)
                 for (int j = 0; j < boardSize[0]; j++)
                 {
+                    boardSimulation[i, j] = null;
                     board[i,j] = null;
                     existingCells[i,j] = true;
                     movedPieces[i,j] = false;
@@ -90,7 +92,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
         else
         {
-            interfaceCoordinator.NextTurn(true);
+            turnCoordinator.NextTurn(turnCoordinator.players[turnCoordinator.turn].alive);
             CheckMoves();
             CheckKing();
         }
@@ -102,7 +104,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         CreatePiece(promotePiece, selectedPromotion);
         promotePiece = null;
 
-        interfaceCoordinator.NextTurn(true);
+        turnCoordinator.NextTurn(turnCoordinator.players[turnCoordinator.turn].alive);
         CheckMoves();
         CheckKing();
     }
@@ -112,9 +114,9 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         for (int i = 0; i < board.GetLength(0); i++)
             for (int j = 0; j < board.GetLength(1); j++)
                 if (board[i,j] != null)
-                    if (board[i,j].type == PieceType.PAWN && board[i,j].player-1 == interfaceCoordinator.turn)
-                        for (int n = 0; n < promotionCells[interfaceCoordinator.turn].Count; n++)
-                            if (promotionCells[interfaceCoordinator.turn][n].SequenceEqual(new int[] { i, j }))
+                    if (board[i,j].type == PieceType.PAWN && board[i,j].player-1 == turnCoordinator.turn)
+                        for (int n = 0; n < promotionCells[turnCoordinator.turn].Count; n++)
+                            if (promotionCells[turnCoordinator.turn][n].SequenceEqual(new int[] { i, j }))
                             {
                                 promotePiece = new int[] { i, j };
                                 return true;
@@ -131,8 +133,8 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 if (!(board[i,j] is null))
                 {
                     board[i,j].avaliableMoves.Clear();
-                    board[i,j].avaliableSpecials.Clear();
-                    if (board[i,j].player == (interfaceCoordinator.turn + 1)) 
+                    board[i,j].availableSpecials.Clear();
+                    if (board[i,j].player == (turnCoordinator.turn + 1)) 
                         board[i,j].CheckMoves(board, existingCells);
                     else
                     {
@@ -157,7 +159,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 Tuple<int[], int[]> moveCoords = move.GetMove();
                 if (board[moveCoords.Item1[0],moveCoords.Item1[1]] != null)
                 {
-                    board[moveCoords.Item1[0],moveCoords.Item1[1]].avaliableSpecials.Add(moveCoords.Item2);
+                    board[moveCoords.Item1[0],moveCoords.Item1[1]].availableSpecials.Add(moveCoords.Item2);
                 }
             }
         }
@@ -173,7 +175,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
             {
                 if (board[i,j] != null)
                 {
-                    if (board[i,j].player == interfaceCoordinator.turn+1)
+                    if (board[i,j].player == turnCoordinator.turn+1)
                     {
                         List<int[]> movesToRemove = new List<int[]>();
                         foreach (int[] avaliableMove in board[i,j].avaliableMoves)
@@ -190,16 +192,12 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                 
                                 foreach (PieceSquare2D piece in tmpBoard)
                                     if (piece != null)
-                                    {
-                                        if (piece.player != interfaceCoordinator.turn + 1)
+                                        if (piece.player != turnCoordinator.turn + 1)
                                         {
                                             List<int[]> attacks = piece.GetAttacks(tmpBoard, existingCells);
                                             foreach (PieceSquare2D king in kings)
-                                            {
-                                                if (king.player == interfaceCoordinator.turn + 1)
-                                                {
+                                                if (king.player == turnCoordinator.turn + 1)
                                                     foreach (int[] attack in attacks)
-                                                    {
                                                         if (attack[0] == king.position[0] && attack[1] == king.position[1])
                                                             try
                                                             {
@@ -207,11 +205,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                                                 break;
                                                             }
                                                             catch { }
-                                                    }
-                                                }
-                                            }
                                         }
-                                    }
                             }
                             else
                             {
@@ -225,22 +219,18 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
                                 foreach (PieceSquare2D piece in tmpBoard)
                                     if (piece != null)
-                                    {
-                                        if (piece.player != interfaceCoordinator.turn + 1)
+                                        if (piece.player != turnCoordinator.turn + 1)
                                         {
                                             List<int[]> attacks = piece.GetAttacks(tmpBoard, existingCells);
-                                                foreach (int[] attack in attacks)
-                                                {
-                                                    if (attack[0] == avaliableMove[0] && attack[1] == avaliableMove[1])
-                                                        try
-                                                        {
-                                                            movesToRemove.Add(avaliableMove);
-                                                            break;
-                                                        }
-                                                        catch { }
-                                                }
+                                            foreach (int[] attack in attacks)
+                                                if (attack[0] == avaliableMove[0] && attack[1] == avaliableMove[1])
+                                                    try
+                                                    {
+                                                        movesToRemove.Add(avaliableMove);
+                                                        break;
+                                                    }
+                                                    catch { }
                                         }
-                                    }
                             }
                         }
                         foreach (int[] removedMove in movesToRemove)
@@ -250,52 +240,43 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                     }
                 }
             }
+
         // == CHECK SPECIAL MOVES =============================================================================
+        List<SpecialMove> specialsToRemove = new List<SpecialMove>();
         foreach (SpecialMove move in availableSpecials)
         {
-            PieceSquare2D[,] tmpBoard = new PieceSquare2D[board.GetLength(0),board.GetLength(1)];
-            for (int a = 0; a < board.GetLength(0); a++)
-                for (int b = 0; b < board.GetLength(1); b++)
-                    tmpBoard[a,b] = board[a,b];
+            move.SimulateMove(this);
 
-            //move.RunMove
-            foreach (PieceSquare2D piece in tmpBoard)
+            foreach (PieceSquare2D piece in boardSimulation)
                 if (piece != null)
-                {
-                    if (piece.player != interfaceCoordinator.turn + 1)
+                    if (piece.player != turnCoordinator.turn + 1)
                     {
-                        List<int[]> attacks = piece.GetAttacks(tmpBoard, existingCells);
+                        List<int[]> attacks = piece.GetAttacks(boardSimulation, existingCells);
                         foreach (PieceSquare2D king in kings)
-                        {
-                            if (king.player == interfaceCoordinator.turn + 1)
-                            {
-                                foreach (int[] attack in attacks)
-                                {
+                            if (king.player == turnCoordinator.turn + 1)
+                                foreach (int[] attack in attacks) { 
                                     if (attack[0] == king.position[0] && attack[1] == king.position[1])
-                                        try
-                                        {
-                                            //movesToRemove.Add(avaliableMove);
-                                            break;
-                                        }
-                                        catch { }
+                                    try
+                                    {
+                                        board[move.GetMove().Item1[0], move.GetMove().Item1[1]].availableSpecials.Remove(move.GetMove().Item2);
+                                        specialsToRemove.Add(move);
+                                        break;
+                                    }
+                                    catch { }
                                 }
-                            }
-                        }
                     }
-                }
+
+            this.EndSimulation();
         }
-            // TODO
-            // foreach special
-                // foreach piece
-                    // if isplayer
-                        // foreach move
-                            // if kingincheck
-                                // remove special
+        foreach (SpecialMove move in specialsToRemove)
+            availableSpecials.Remove(move);
+        totalAvailableMoves += availableSpecials.Count;
+
         // == CHECK IF NO MOVES AVAILABLE =====================================================================
-            // TODO
-            // count all moves
-            // if avaliablemoves == 0
-                // eliminateplayer
+        if (totalAvailableMoves == 0)
+        {
+            turnCoordinator.EliminateActualPlayer();
+        }
     }
 
 
@@ -457,7 +438,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     {
 
         if (board[from[0],from[1]] != null)
-            if(board[from[0],from[1]].player == (interfaceCoordinator.turn+1))
+            if(board[from[0],from[1]].player == (turnCoordinator.turn+1))
             {
                 if (board[from[0],from[1]].MoveTo(to))
                 {
@@ -469,7 +450,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                     movedPieces[from[0],from[1]] = true;
                     movedPieces[to[0],to[1]] = true;
 
-                    moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
+                    moveHistory.Insert(0, new HistoryMove(turnCoordinator.turn, from, to));
                     EndTurn();
                 }
                 else
@@ -482,7 +463,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                 if(coords.Item2[0] == to[0] && coords.Item2[1] == to[1])
                                 {
                                     move.RunMove(this);
-                                    moveHistory.Insert(0, new HistoryMove(interfaceCoordinator.turn, from, to));
+                                    moveHistory.Insert(0, new HistoryMove(turnCoordinator.turn, from, to));
                                     EndTurn();
                                     break;
                                 }
@@ -527,7 +508,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
     public void CreatePiece(int[] cell, char pieceChar)
     {
-        boardGenerator.CreatePiece(cell, pieceChar, interfaceCoordinator.turn + 1);
+        boardGenerator.CreatePiece(cell, pieceChar, turnCoordinator.turn + 1);
         movedPieces[cell[0],cell[1]] = true;
     }
 
@@ -567,7 +548,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     public List<HistoryMove> GetLastMoves()
     {
         List<HistoryMove> lastMoves = new List<HistoryMove>();
-        for (int i = 1; i <= interfaceCoordinator.GetPlayerAmmount(); i++)
+        for (int i = 1; i <= turnCoordinator.GetPlayerAmmount(); i++)
             lastMoves.Add(GetLastMoveFromPlayer(i));
         return lastMoves;
     }
@@ -596,6 +577,55 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
         
         return promotablePieces;
+    }
+
+    public void InitSimulation()
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+            for (int j = 0; j < board.GetLength(1); j++)
+                boardSimulation[i, j] = board[i, j];
+    }
+
+    public void SimulateCreatePiece(int[] cell, char pieceChar)
+    {
+        boardSimulation[cell[0], cell[1]] = new PieceSquare2D();
+        boardSimulation[cell[0], cell[1]].Initialize(
+            new int[] { cell[0], cell[1] },
+            this.gameObject,
+            turnCoordinator.turn + 1,
+            boardGenerator.playerList[turnCoordinator.turn].team,
+            boardGenerator.playerList[turnCoordinator.turn].color,
+            new List<Move>(),
+            boardGenerator.playerDirections[turnCoordinator.turn],
+            0,
+            pieceChar,
+            PieceType.NONE,
+            null
+            );
+    }
+
+    public void SimulateRemovePiece(int[] cell)
+    {
+        boardSimulation[cell[0], cell[1]] = null;
+    }
+
+    public void SimulateMovePiece(int[] from, int[] to)
+    {
+        if (from.Length == 2 && to.Length == 2)
+        {
+            boardSimulation[from[0], from[1]].ForceMoveTo(to);
+            
+            boardSimulation[to[0], to[1]] = boardSimulation[from[0], from[1]];
+            boardSimulation[from[0], from[1]] = null;
+        }
+    }
+
+    public void EndSimulation()
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+            for (int j = 0; j < board.GetLength(1); j++)
+                if (board[i,j] != null)
+                    board[i, j].ForceMoveTo(new int[] { i, j });
     }
 }
 

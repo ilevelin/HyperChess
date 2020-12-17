@@ -15,7 +15,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
     bool onHold = false, isSelected = false;
     public List<Move> moves = new List<Move>();
     public List<int[]> avaliableMoves = new List<int[]>();
-    public List<int[]> avaliableSpecials = new List<int[]>();
+    public List<int[]> availableSpecials = new List<int[]>();
     [SerializeField] GameObject possibleMovePrefab;
     GameObject possibleMoveParent;
     public PieceType type;
@@ -537,7 +537,7 @@ public class PieceSquare2D : MonoBehaviour, Piece
         {
             GameObject.Instantiate(possibleMovePrefab, new Vector3(move[0], move[1]), new Quaternion(), possibleMoveParent.transform);
         }
-        foreach (int[] move in avaliableSpecials)
+        foreach (int[] move in availableSpecials)
         {
             GameObject.Instantiate(possibleMovePrefab, new Vector3(move[0], move[1]), new Quaternion(), possibleMoveParent.transform);
         }

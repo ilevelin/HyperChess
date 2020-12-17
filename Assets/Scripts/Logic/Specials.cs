@@ -29,6 +29,13 @@ public class SpecialMove
             res.Modify(board);
     }
 
+    public void SimulateMove(BoardCoordinator board)
+    {
+        board.InitSimulation();
+        foreach (SpecialResult res in results)
+            res.Simulate(board);
+    }
+
     public Tuple<int[],int[]> GetMove()
     {
         foreach (SpecialResult res in results)
@@ -194,6 +201,7 @@ public class SpecialConditionLastMove : SpecialCondition
 public interface SpecialResult
 {
     void Modify(BoardCoordinator board);
+    void Simulate(BoardCoordinator board);
 }
 
 public class SpecialResultMovePiece : SpecialResult
@@ -203,6 +211,11 @@ public class SpecialResultMovePiece : SpecialResult
     public void Modify(BoardCoordinator board)
     {
         board.MovePieceForced(from, to);
+    }
+
+    public void Simulate(BoardCoordinator board)
+    {
+        board.SimulateMovePiece(from, to);
     }
 
     public SpecialResultMovePiece(int[] f, int[] t)
@@ -222,6 +235,11 @@ public class SpecialResultCreatePiece : SpecialResult
         board.CreatePiece(where, what);
     }
 
+    public void Simulate(BoardCoordinator board)
+    {
+        board.SimulateCreatePiece(where, what);
+    }
+
     public SpecialResultCreatePiece(int[] c, char p)
     {
         where = c;
@@ -236,6 +254,11 @@ public class SpecialResultRemovePiece : SpecialResult
     public void Modify(BoardCoordinator board)
     {
         board.RemovePiece(where);
+    }
+
+    public void Simulate(BoardCoordinator board)
+    {
+        board.SimulateRemovePiece(where);
     }
 
     public SpecialResultRemovePiece(int[] c)

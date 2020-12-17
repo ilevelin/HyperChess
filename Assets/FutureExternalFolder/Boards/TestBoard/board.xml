@@ -9,23 +9,43 @@
   <players>
     <player>
       <team>1</team>
-      <color>200,0,0</color>
+      <color>0,0,200</color>
       <direction>1</direction>
     </player>
     <player>
       <team>2</team>
-      <color>0,0,200</color>
-      <direction>-2</direction>
+      <color>200,0,0</color>
+      <direction>1</direction>
     </player>
     <player>
       <team>3</team>
       <color>0,200,0</color>
-      <direction>-1</direction>
+      <direction>1</direction>
     </player>
     <player>
       <team>4</team>
       <color>200,200,0</color>
-      <direction>2</direction>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>5</team>
+      <color>0,200,200</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>5</team>
+      <color>200,0,200</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>5</team>
+      <color>200,200,200</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>5</team>
+      <color>200,100,0</color>
+      <direction>1</direction>
     </player>
   </players>
 
@@ -53,37 +73,34 @@
   </pieces>
 
   <position>
-    <row>4B,0,0,0,_,_,_,_,_,3B,3R,3K,3B</row>
-    <row>4K,0,0,0,_,_,0,_,_,3P,3P,0,0</row>
-    <row>4R,4P,0,0,0,0,0:4,0,0,0,0,0,0</row>
-    <row>4B,4P,0,0,0,0,0:4,0,0,0,0,0,0</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,_,0,0,0,0,_,_</row>
-    <row>_,0,0:1,0:1,0,_,_,_,0,0:3,0:3,0,_</row>
-    <row>_,_,0,0,0,0,_,0,0,0,0,_,_</row>
-    <row>_,_,0,0,0,0,0,0,0,0,0,_,_</row>
-    <row>0,0,0,0,0,0,0:2,0,0,0,0,2P,2B</row>
-    <row>0,0,0,0,0,0,0:2,0,0,0,0,2P,2R</row>
-    <row>0,0,1P,1P,_,_,0,_,_,0,0,0,2K</row>
-    <row>1B,1K,1R,1B,_,_,_,_,_,0,0,0,2B</row>
+    <row>0,1P,0,0,_,_,0,2P,0,0</row>
+    <row>1K,0,0,0,_,_,2K,0,0,0</row>
+    <row>0,0,0,0,_,_,0,0,0,0</row>
+    <row>0,0,0,5R,_,_,0,0,0,6R</row>
+    <row>_,_,_,_,_,_,_,_,_,_</row>
+    <row>_,_,_,_,_,_,_,_,_,_</row>
+    <row>0,3P,0,0,_,_,0,4P,0,0</row>
+    <row>3K,0,0,0,_,_,4K,0,0,0</row>
+    <row>0,0,0,0,_,_,0,0,0,0</row>
+    <row>0,0,0,7R,_,_,0,0,0,8R</row>
   </position>
 
   <specials>
     <move>
-      <check cell="4,12">hasnotmoved</check>
-      <movepiece>4,12-4,10</movepiece>
+      <check cell="7,2">hasnotmoved</check>
+      <movepiece>7,2-9,2</movepiece>
     </move>
     <move>
-      <check cell="2,4">hasnotmoved</check>
-      <movepiece>2,4-4,4</movepiece>
+      <check cell="1,4">hasnotmoved</check>
+      <movepiece>1,4-3,4</movepiece>
     </move>
     <move>
-      <check cell="10,2">hasnotmoved</check>
-      <movepiece>10,2-10,4</movepiece>
+      <check cell="7,8">hasnotmoved</check>
+      <movepiece>7,8-9,8</movepiece>
     </move>
     <move>
-      <check cell="12,10">hasnotmoved</check>
-      <movepiece>12,10-10,10</movepiece>
+      <check cell="1,10">hasnotmoved</check>
+      <movepiece>1,10-3,10</movepiece>
     </move>
   </specials>
 </board>

@@ -12,8 +12,8 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     [SerializeField] Color cellFirstColor, cellSecondColor;
     List<Tuple<char, string, int>> importList;
     string[][] board;
-    List<PlayerInfo> playerList = new List<PlayerInfo>();
-    List<int> playerDirections = new List<int>();
+    public List<PlayerInfo> playerList = new List<PlayerInfo>();
+    public List<int> playerDirections = new List<int>();
 
     public Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
     public Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
@@ -155,6 +155,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
         RecalculateCamera();
 
         boardCoordinator.GetComponent<BoardCoordinator>().CheckMoves();
+        boardCoordinator.GetComponent<BoardCoordinator>().CheckKing();
     }
 
     public PieceSquare2D CreatePiece(int[] cell, char piece, int player)
