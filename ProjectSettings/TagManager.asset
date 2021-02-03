@@ -7,6 +7,7 @@ TagManager:
   - MainLibrary
   - PossibleMoves
   - BoardCoordinator
+  - LoadGameData
   layers:
   - Default
   - TransparentFX

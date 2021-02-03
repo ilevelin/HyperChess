@@ -12,20 +12,30 @@ public enum BoardType
 
 public class MainLibrary : MonoBehaviour
 {
-    
-
+    [SerializeField] Sprite defaultBoardSprite;
     XmlDocument pieceXML, boardXML;
-    string externalFolderLocation = "./Assets/FutureExternalFolder"; // TEMPORAL FOLDER, CHANGE BEFORE COMPILING
+    string externalFolderLocation;
 
     public Dictionary<string, PieceElement> pieceLibrary;
     public Dictionary<string, BoardElement> boardLibrary;
 
     void Start()
     {
+        /*** DUPLICATION CHECK *********************************************************************************************************************/
+        /*******************************************************************************************************************************************/
+        if (GameObject.FindGameObjectsWithTag("MainLibrary").Length != 1) GameObject.Destroy(gameObject);
+
+        GameObject.DontDestroyOnLoad(gameObject);
+
         /*** INIT **********************************************************************************************************************************/
         /*******************************************************************************************************************************************/
         pieceLibrary = new Dictionary<string, PieceElement>();
         boardLibrary = new Dictionary<string, BoardElement>();
+
+        if (Application.isEditor)
+            externalFolderLocation = "./Assets/ExternalFolder";
+        else
+            externalFolderLocation = "./UserContent/";
 
         string
             piecesFolder = externalFolderLocation + "/Pieces",
@@ -45,6 +55,7 @@ public class MainLibrary : MonoBehaviour
             string folderName = folder.Substring(piecesFolder.Length + 1);
 
             if (folderName.Equals("TemplatePiece")) continue;
+            importLog.Add("");
             importLog.Add("═══ Importing folder \"" + folderName + "\" ═══");
 
             PieceElement newPiece = new PieceElement();
@@ -238,6 +249,16 @@ public class MainLibrary : MonoBehaviour
             {
                 Texture2D tmpTexture = new Texture2D(2, 2);
                 tmpTexture.LoadImage(File.ReadAllBytes(folder + "/icon.png"));
+                if (tmpTexture.width != 500 && tmpTexture.height != 500)
+                {
+                    isValid = false;
+                    importLog.Add("[ERROR] Piece image size is not valid. Atleast one of its sides must me 500 pixels in size.");
+                }
+                if (tmpTexture.width > 500 || tmpTexture.height > 500)
+                {
+                    isValid = false;
+                    importLog.Add("[ERROR] Piece image size is not valid. None of it's sides can be greater than 500 pixels in size.");
+                }
                 newPiece.image = Sprite.Create(tmpTexture, new Rect(0.0f, 0.0f, tmpTexture.width, tmpTexture.height), new Vector2(0.5f, 0.5f));
             }
             catch (Exception e)
@@ -311,6 +332,7 @@ public class MainLibrary : MonoBehaviour
             string folderName = folder.Substring(piecesFolder.Length + 1);
 
             if (folderName.Equals("TemplateBoard")) continue;
+            importLog.Add("");
             importLog.Add("═══ Importing folder \"" + folderName + "\" ═══");
 
             BoardElement newBoard = new BoardElement();
@@ -360,6 +382,7 @@ public class MainLibrary : MonoBehaviour
                             break;
                     }
                 }
+                newBoard.image = defaultBoardSprite;
             }
             catch
             {
@@ -493,7 +516,7 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"players\" element in the file. Skipping board.");
                 continue;
             }
-
+           
             /*** LOADING PIECES ********************************************************************************************************************/
             try
             {
@@ -608,7 +631,7 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"pieces\" element in the file. Skipping board.");
                 continue;
             }
-
+           
             /*** LOADING POSITION ******************************************************************************************************************/
             try
             {
@@ -744,7 +767,7 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"position\" element in the file. Skipping board.");
                 continue;
             }
-
+           
             /*** LOADING SPECIALS ******************************************************************************************************************/
             try
             {
@@ -826,6 +849,11 @@ public class MainLibrary : MonoBehaviour
                                         player = int.Parse(conditionText[8].ToString());
                                         conditionText = "isplayer";
                                     }
+                                    if (conditionText.StartsWith("isteam"))
+                                    {
+                                        player = int.Parse(conditionText.Substring(6));
+                                        conditionText = "isteam";
+                                    }
 
                                     switch (conditionText)
                                     {
@@ -840,6 +868,9 @@ public class MainLibrary : MonoBehaviour
                                             break;
                                         case "isplayer":
                                             condition = SpecialConditionCheckType.ISPLAYER;
+                                            break;
+                                        case "isteam":
+                                            condition = SpecialConditionCheckType.ISTEAM;
                                             break;
                                         case "isempty":
                                             condition = SpecialConditionCheckType.ISEMPTY;
@@ -1093,22 +1124,26 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"specials\" element in the file. Skipping board.");
                 continue;
             }
-
+           
             /*** LOADING IMAGE *********************************************************************************************************************/
             bool isValid = true;
-
+           
             try
             {
                 Texture2D tmpTexture = new Texture2D(2, 2);
                 tmpTexture.LoadImage(File.ReadAllBytes(folder + "/icon.png"));
+                if (tmpTexture.width != 1280 || tmpTexture.height != 720)
+                {
+                    importLog.Add("[WARNING] Board image size is not valid. It must be 1280 pixels wide and 720 pixels tall exactly. Loading default image.");
+                    throw new Exception();
+                }
                 newBoard.image = Sprite.Create(tmpTexture, new Rect(0.0f, 0.0f, tmpTexture.width, tmpTexture.height), new Vector2(0.5f, 0.5f));
             }
             catch
             {
-                isValid = false;
-                importLog.Add("[ERROR] Could not load icon.png. Check that the file does exists and it is spelled correctly. Remember it is case sensitive.");
+                newBoard.image = defaultBoardSprite;
             }
-
+           
             /*** BOARD CHECKING ********************************************************************************************************************/
             if (newName.Length == 0) // Has name?
             {
@@ -1122,7 +1157,7 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] The ID \"" + newName + "\" is already used by another board in the library.");
                 isValid = false;
             }
-
+           
             /*** SAVING BOARD **********************************************************************************************************************/
             if (isValid)
             {
@@ -1134,8 +1169,18 @@ public class MainLibrary : MonoBehaviour
 
         /*** LAST INIT *****************************************************************************************************************************/
         /*******************************************************************************************************************************************/
-        GameObject.DontDestroyOnLoad(gameObject);
-        //foreach (string message in importLog) Debug.Log(message); // Temporal. Exportar a archivo en un futuro.
+        DateTime time = DateTime.Now;
+        string logsRoute = "";
+
+        if (Application.isEditor)
+            logsRoute = "./Assets/ExternalLogs";
+        else
+            logsRoute = "./Logs/";
+
+        if (!System.IO.Directory.Exists(logsRoute))
+            System.IO.Directory.CreateDirectory(logsRoute);
+        
+        System.IO.File.WriteAllLines(String.Format("{0}/LOG_{1,4:0000}_{2,2:00}_{3,2:00}_{4,2:00}_{5,2:00}_{6,2:00}.txt", logsRoute, time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second), importLog);
     }
 
     public PieceElement GetPiece(string id)

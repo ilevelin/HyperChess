@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Menus/PieceLibrary.unity
     guid: e136de85ed1f5e941a31e1d484c077a5
   - enabled: 1
+    path: Assets/Scenes/Menus/BoardLibrary.unity
+    guid: 9caec20287755be4b8bda732e66221df
+  - enabled: 1
     path: Assets/Scenes/2D/Square2D.unity
     guid: a35565a06af064440b75b49d918f42a4
   m_configObjects: {}

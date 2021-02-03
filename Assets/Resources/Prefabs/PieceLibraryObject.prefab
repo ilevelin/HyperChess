@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3566290399130499868}
   - component: {fileID: 7844275782871761550}
+  - component: {fileID: 2162308364117200397}
   m_Layer: 0
   m_Name: PieceLibraryObject
   m_TagString: Untagged
@@ -53,6 +54,32 @@ MonoBehaviour:
   pieceName: {fileID: 3103424432444160905}
   pieceVersion: {fileID: 8106803949176106141}
   pieceAuthor: {fileID: 4035118393946475547}
+--- !u!61 &2162308364117200397
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63759112963343102}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 0.45}
+  m_EdgeRadius: 0
 --- !u!1 &206571102261254597
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,6 +351,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -528,6 +556,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -597,7 +626,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 9.713785, y: 2.4274328, z: 9.277122, w: 2.464205}
+  m_margin: {x: 9.713785, y: 2.4667213, z: 9.277122, w: 2.4342217}
   m_textInfo:
     textComponent: {fileID: 8106803949176106141}
     characterCount: 4
@@ -813,6 +842,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

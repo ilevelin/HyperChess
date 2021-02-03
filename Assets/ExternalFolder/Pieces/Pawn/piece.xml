@@ -1,0 +1,15 @@
+<piece>
+  <metadata>
+    <ID>classic.pawn</ID>
+    <name>Pawn</name>
+    <version></version>
+    <author></author>
+    <boardType>Square2D</boardType>
+  </metadata>
+  
+  <moves>
+    <jump type="move">1,0</jump>
+    <jump type="capture">1,1</jump>
+    <jump type="capture">1,-1</jump>
+  </moves>
+</piece>

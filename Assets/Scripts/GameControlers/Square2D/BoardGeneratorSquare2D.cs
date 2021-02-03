@@ -8,6 +8,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
     private int boardHeight = 1, boardWidth = 1;
     private MainLibrary mainLibrary;
+    private LoadGameData gameData;
     [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, boardCoordinator, samplePiece, playerInterface;
     [SerializeField] Color cellFirstColor, cellSecondColor;
     List<Tuple<char, string, int>> importList;
@@ -22,8 +23,9 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
     public void StartAfterCoordinator()
     {
+        gameData = GameObject.FindGameObjectWithTag("LoadGameData").GetComponent<LoadGameData>();
         mainLibrary = GameObject.FindGameObjectWithTag("MainLibrary").GetComponent<MainLibrary>();
-        LoadBoardFromLibrary("TestBoard");
+        LoadBoardFromLibrary(gameData.boardID);
 
         PlayerInfoCoordinator playerCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
         foreach(PlayerInfo player in playerList)
@@ -60,10 +62,10 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 for (int i = 0; i < boardToLoad.players.Count; i++)
                 {
                     playerList.Add(new PlayerInfo(
-                        1000 * 60 * 5, 5000, 0,
-                        "Player " + i,
+                        gameData.baseTimes[i], gameData.incements[i], gameData.delays[i],
+                        gameData.playerNames[i],
                         boardToLoad.players[i].color ?? default(Color),
-                        i + 100
+                        boardToLoad.players[i].team ?? (100 + i)
                         ));
                     playerDirections.Add(boardToLoad.players[i].direction ?? 1);
                     boardCoordinator.GetComponent<BoardCoordinatorSquare2D>().promotionCells.Add(new List<int[]>());
@@ -119,7 +121,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 {
                     GameObject tmp = GameObject.Instantiate(cellPrefab, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0), boardParent.transform);
 
-                    if (((i + j) % 2) == 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
+                    if (((i + j) % 2) != 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
                     else tmp.GetComponent<SpriteRenderer>().color = cellSecondColor;
 
                     tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { i, j });

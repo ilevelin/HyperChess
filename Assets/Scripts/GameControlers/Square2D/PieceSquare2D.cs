@@ -567,4 +567,9 @@ public class PieceSquare2D : MonoBehaviour, Piece
     {
         return player;
     }
+
+    public int GetTeam()
+    {
+        return team;
+    }
 }

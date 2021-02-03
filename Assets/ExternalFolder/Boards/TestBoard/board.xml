@@ -1,0 +1,61 @@
+<board>
+  <metadata>
+    <name>MiniChess</name>
+    <version>v1.0</version>
+    <author>ilevelin</author>
+    <boardType>Square2D</boardType>
+  </metadata>
+
+  <players>
+    <player>
+      <team>1</team>
+      <color>200,0,0</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>2</team>
+      <color>0,0,200</color>
+      <direction>-1</direction>
+    </player>
+  </players>
+
+  <pieces>
+    <piece type="king">
+      <ID>classic.king</ID>
+      <value>10</value>
+      <char>K</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.rook</ID>
+      <value>5</value>
+      <char>R</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.bishop</ID>
+      <value>3</value>
+      <char>B</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.knight</ID>
+      <value>3</value>
+      <char>N</char>
+    </piece>
+    <piece type="pawn">
+      <ID>classic.pawn</ID>
+      <value>3</value>
+      <char>P</char>
+    </piece>
+  </pieces>
+
+  <position>
+    <row>2N:1,2B:1,2R:1,2K:1,2B:1,2N:1</row>
+    <row>2P,2P,2P,2P,2P,2P</row>
+    <row>0,0,0,0,0,0</row>
+    <row>0,0,0,0,0,0</row>
+    <row>1P,1P,1P,1P,1P,1P</row>
+    <row>1N:2,1B:2,1R:2,1K:2,1B:2,1N:2</row>
+  </position>
+
+  <specials>
+  </specials>
+</board>

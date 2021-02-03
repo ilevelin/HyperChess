@@ -1,0 +1,16 @@
+<piece>
+  <metadata>
+    <ID>classic.bishop</ID>
+    <name>Bishop</name>
+    <version></version>
+    <author></author>
+    <boardType>Square2D</boardType>
+  </metadata>
+  
+  <moves>
+    <infinitejump type="both">1,1</infinitejump>
+    <infinitejump type="both">1,-1</infinitejump>
+    <infinitejump type="both">-1,1</infinitejump>
+    <infinitejump type="both">-1,-1</infinitejump>
+  </moves>
+</piece>

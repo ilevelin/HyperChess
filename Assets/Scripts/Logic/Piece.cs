@@ -13,6 +13,7 @@ public interface Piece
     void ShowMoves();
     void HideMoves();
 
+    int GetTeam();
     char GetCharacter();
     int GetPlayer();
 }

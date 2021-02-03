@@ -1,0 +1,16 @@
+<piece>
+  <metadata>
+    <ID>classic.rook</ID>
+    <name>Rook</name>
+    <version></version>
+    <author></author>
+    <boardType>Square2D</boardType>
+  </metadata>
+  
+  <moves>
+    <infinitejump type="both">1,0</infinitejump>
+    <infinitejump type="both">-1,0</infinitejump>
+    <infinitejump type="both">0,1</infinitejump>
+    <infinitejump type="both">0,-1</infinitejump>
+  </moves>
+</piece>

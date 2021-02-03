@@ -58,7 +58,7 @@ public interface SpecialCondition
 
 public enum SpecialConditionCheckType
 {
-    HASMOVED, HASNOTMOVED, ISPIECE, ISPLAYER, ISEMPTY, ISNOTEMPTY, ISATTACKED, ISSAFE, NULL
+    HASMOVED, HASNOTMOVED, ISPIECE, ISPLAYER, ISTEAM, ISEMPTY, ISNOTEMPTY, ISATTACKED, ISSAFE, NULL
 }
 
 public class SpecialConditionCheck : SpecialCondition
@@ -112,6 +112,16 @@ public class SpecialConditionCheck : SpecialCondition
                 try
                 {
                     return board.GetPieceFromCell(cell).GetPlayer() == player;
+                }
+                catch
+                {
+                    return false;
+                }
+
+            case SpecialConditionCheckType.ISTEAM:
+                try
+                {
+                    return board.GetPieceFromCell(cell).GetTeam() == player;
                 }
                 catch
                 {

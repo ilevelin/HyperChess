@@ -126,6 +126,13 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
     public void CheckMoves()
     {
+        try
+        {
+            Debug.Log($"===LAST MOVES===");
+            foreach (HistoryMove hmove in GetLastMoves())
+                Debug.Log($"P{hmove.player}: {hmove.from[0]},{hmove.from[1]}-{hmove.to[0]},{hmove.to[1]}");
+        } catch (Exception e) { Debug.Log(e); }
+
         List<int[]> attackedCells = new List<int[]>();
         for (int i = 0; i < board.GetLength(0); i++)
             for (int j = 0; j < board.GetLength(1); j++)
@@ -192,7 +199,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                                 
                                 foreach (PieceSquare2D piece in tmpBoard)
                                     if (piece != null)
-                                        if (piece.player != turnCoordinator.turn + 1)
+                                        if (piece.team != turnCoordinator.players[turnCoordinator.turn].team)
                                         {
                                             List<int[]> attacks = piece.GetAttacks(tmpBoard, existingCells);
                                             foreach (PieceSquare2D king in kings)
@@ -219,7 +226,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
                                 foreach (PieceSquare2D piece in tmpBoard)
                                     if (piece != null)
-                                        if (piece.player != turnCoordinator.turn + 1)
+                                        if (piece.team != turnCoordinator.players[turnCoordinator.turn].team)
                                         {
                                             List<int[]> attacks = piece.GetAttacks(tmpBoard, existingCells);
                                             foreach (int[] attack in attacks)
@@ -249,7 +256,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
             foreach (PieceSquare2D piece in boardSimulation)
                 if (piece != null)
-                    if (piece.player != turnCoordinator.turn + 1)
+                    if (piece.team != turnCoordinator.players[turnCoordinator.turn].team)
                     {
                         List<int[]> attacks = piece.GetAttacks(boardSimulation, existingCells);
                         foreach (PieceSquare2D king in kings)
@@ -548,7 +555,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     public List<HistoryMove> GetLastMoves()
     {
         List<HistoryMove> lastMoves = new List<HistoryMove>();
-        for (int i = 1; i <= turnCoordinator.GetPlayerAmmount(); i++)
+        for (int i = 0; i < turnCoordinator.GetPlayerAmmount(); i++)
             lastMoves.Add(GetLastMoveFromPlayer(i));
         return lastMoves;
     }
@@ -556,7 +563,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
     public HistoryMove GetLastMoveFromPlayer(int player)
     {
         foreach (HistoryMove move in moveHistory)
-            if (move.player == player) return move;
+            if (move.player == (player - 1)) return move;
         return null;
     }
 

@@ -1,0 +1,20 @@
+<piece>
+  <metadata>
+    <ID>classic.king</ID>
+    <name>King</name>
+    <version></version>
+    <author></author>
+    <boardType>Square2D</boardType>
+  </metadata>
+  
+  <moves>
+    <jump type="both">0,1</jump>
+    <jump type="both">0,-1</jump>
+    <jump type="both">1,1</jump>
+    <jump type="both">1,-1</jump>
+    <jump type="both">1,0</jump>
+    <jump type="both">-1,1</jump>
+    <jump type="both">-1,-1</jump>
+    <jump type="both">-1,0</jump>
+  </moves>
+</piece>
