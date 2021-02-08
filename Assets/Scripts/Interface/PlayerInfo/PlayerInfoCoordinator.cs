@@ -16,6 +16,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
     int delay = 0;
 
     bool ready = false;
+    private bool gameRunning = true;
 
     public int GetPlayerAmmount()
     {
@@ -55,16 +56,25 @@ public class PlayerInfoCoordinator : MonoBehaviour
     {
         players[player].alive = false;
         controllers[player].EliminatePlayer();
-        if (player == turn) boardCoordinator.EndTurn();
+
+        List<int> aliveTeams = new List<int>();
+        foreach (PlayerInfo playerInfo in players)
+            if (playerInfo.alive)
+                if (!aliveTeams.Contains(playerInfo.team))
+                    aliveTeams.Add(playerInfo.team);
+
+        if (aliveTeams.Count == 1)
+        {
+            turn = -1;
+            gameRunning = false;
+            boardCoordinator.EndGame(aliveTeams[0]);
+        }
+        else if (player == turn) boardCoordinator.EndTurn();
     }
 
     public void EliminateActualPlayer()
     {
-        players[turn].alive = false;
-        controllers[turn].EliminatePlayer();
-        Debug.Log("ELIMINATED");
-        boardCoordinator.EndTurn();
-        Debug.Log("ENDIGNTURN");
+        EliminatePlayer(turn);
     }
 
     internal void Initialize(BoardCoordinator bc)
@@ -75,7 +85,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!ready) return;
+        if (!ready || !gameRunning) return;
         if (players[turn].alive)
         {
             if (delay > 0)
@@ -106,7 +116,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     private void Update()
     {
-        if (!ready) return;
+        if (!ready || !gameRunning) return;
         playerTurnArrow.transform.position = Vector3.Lerp(playerTurnArrow.transform.position, new Vector3(0, (Screen.height) - (10 + (50 * turn))), 0.1f);
         playerTurnArrow.GetComponent<Image>().color = Color.Lerp(playerTurnArrow.GetComponent<Image>().color, players[turn].color, 0.1f);
     }

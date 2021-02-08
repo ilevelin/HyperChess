@@ -286,6 +286,21 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
         }
     }
 
+    public void PlayerResign()
+    {
+        turnCoordinator.EliminateActualPlayer();
+    }
+
+    public void EndGame(int winnerTeam)
+    {
+        List<PlayerInfo> winnerPlayers = new List<PlayerInfo>();
+        foreach (PlayerInfo player in turnCoordinator.players)
+            if (player.team == winnerTeam)
+                winnerPlayers.Add(player);
+
+        // Lanzar interfaz
+        Debug.Log($"HA GANADO EL EQUIPO {winnerTeam}");
+    }
 
 
     public void MousePressed(int[] location)

@@ -21,11 +21,19 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     public Dictionary<char, int> values = new Dictionary<char, int>();
     public Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
 
+    /*
+    private void Update()
+    {
+        RecalculateCamera();
+    }
+    */
+
     public void StartAfterCoordinator()
     {
         gameData = GameObject.FindGameObjectWithTag("LoadGameData").GetComponent<LoadGameData>();
         mainLibrary = GameObject.FindGameObjectWithTag("MainLibrary").GetComponent<MainLibrary>();
         LoadBoardFromLibrary(gameData.boardID);
+        GameObject.Destroy(gameData.gameObject);
 
         PlayerInfoCoordinator playerCoordinator = playerInterface.GetComponent<PlayerInfoCoordinator>();
         foreach(PlayerInfo player in playerList)
@@ -93,13 +101,15 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
     void RecalculateCamera()
     {
-        gameCamera.transform.position = new Vector3((boardWidth / 2.0f) - 0.5f, (boardHeight / 2.0f) - 0.5f, -10);
+        int effectiveBoardWidth = (int)(boardWidth * (1f + (600f / (Screen.width - 600f))));
+
+        gameCamera.transform.position = new Vector3((effectiveBoardWidth / 2.0f) - 0.5f - ((effectiveBoardWidth * 600f) / ((Screen.width - 600f) * 2)), (boardHeight / 2.0f) - 0.5f, -10);
 
         float screenAspectRatio = (Screen.width * 1.0f) / Screen.height;
-        float boardAspectRatio = (boardWidth * 1.0f) / boardHeight;
+        float boardAspectRatio = (effectiveBoardWidth * 1.0f) / boardHeight;
         
         if (boardAspectRatio > screenAspectRatio)
-            gameCamera.GetComponent<Camera>().orthographicSize = ((boardWidth / 2.0f) / screenAspectRatio) + 1;
+            gameCamera.GetComponent<Camera>().orthographicSize = ((effectiveBoardWidth / 2.0f) / screenAspectRatio) + 1;
         else
             gameCamera.GetComponent<Camera>().orthographicSize = (boardHeight / 2.0f) + 1;
 

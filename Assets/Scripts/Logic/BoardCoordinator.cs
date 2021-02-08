@@ -12,6 +12,8 @@ public interface BoardCoordinator
     bool CheckPromotions();
     void CheckMoves();
     void CheckKing();
+    void PlayerResign();
+    void EndGame(int winnerTeam);
 
     void MousePressed(int[] location);
     void MouseReleased(int[] location);
