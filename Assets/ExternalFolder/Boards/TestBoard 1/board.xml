@@ -76,7 +76,7 @@
   </position>
 
   <specials>
-    <!-- 2 step for pawns -->
+    <!-- // 2 step for pawns ////////////////////////////////////////////////////////////////// -->
     <move>
       <check cell="2,1">hasnotmoved</check>
       <check cell="3,1">isempty</check>
@@ -237,7 +237,8 @@
       <check cell="8,17">isempty</check>
       <movepiece>9,17-7,17</movepiece>
     </move>
-    <!-- En passant from left -->
+    
+    <!-- // En passant from left ////////////////////////////////////////////////////////////// -->
     <move>
       <lastmove>2,2-4,2</lastmove>
       <check cell="4,2">ispieceP</check>
@@ -478,7 +479,8 @@
       <movepiece>7,16-8,17</movepiece>
       <removepiece>7,17</removepiece>
     </move>
-    <!-- En passant from right -->
+    
+    <!-- // En passant from right ///////////////////////////////////////////////////////////// -->
     <move>
       <lastmove>2,1-4,1</lastmove>
       <check cell="4,1">ispieceP</check>
@@ -719,5 +721,8 @@
       <movepiece>7,17-8,16</movepiece>
       <removepiece>7,16</removepiece>
     </move>
+    
+    <!-- // Castling ////////////////////////////////////////////////////////////////// -->
+    <!-- // TO-DO ///////////////////////////////////////////////////////////////////// -->
   </specials>
 </board>
