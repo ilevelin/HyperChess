@@ -592,8 +592,12 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
             boardGenerator.types.TryGetValue(character, out type);
             if (type == PieceType.UPGRADE)
             {
+                Dictionary<string, Sprite> spriteList;
                 Sprite sprite;
-                boardGenerator.sprites.TryGetValue(character, out sprite);
+
+                boardGenerator.sprites.TryGetValue(character, out spriteList);
+                if (!spriteList.TryGetValue(boardGenerator.playerSpriteVariations[turnCoordinator.turn], out sprite))
+                    spriteList.TryGetValue("default", out sprite);
                 promotablePieces.Add(character, sprite);
             }
         }

@@ -16,6 +16,7 @@
       <team>2</team>
       <color>0,0,200</color>
       <direction>-1</direction>
+      <imagevariant>icon</imagevariant>
     </player>
   </players>
 
@@ -55,6 +56,13 @@
     <row>1P,1P,1P,1P,1P,1P</row>
     <row>1N:2,1B:2,1R:2,1K:2,1B:2,1N:2</row>
   </position>
+
+  <customcolors>
+    <colorlist>
+      <color>32,120,0</color>
+      <color>255,255,70</color>
+    </colorlist>
+  </customcolors>
 
   <specials>
   </specials>

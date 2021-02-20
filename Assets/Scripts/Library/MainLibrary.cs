@@ -33,13 +33,13 @@ public class MainLibrary : MonoBehaviour
         boardLibrary = new Dictionary<string, BoardElement>();
 
         if (Application.isEditor)
-            externalFolderLocation = "./Assets/ExternalFolder";
+            externalFolderLocation = ".\\Assets\\ExternalFolder";
         else
-            externalFolderLocation = "./UserContent/";
+            externalFolderLocation = ".\\UserContent";
 
         string
-            piecesFolder = externalFolderLocation + "/Pieces",
-            boardsFolder = externalFolderLocation + "/Boards";
+            piecesFolder = externalFolderLocation + "\\Pieces",
+            boardsFolder = externalFolderLocation + "\\Boards";
         List<string> importLog = new List<string>();
 
         /*** LOADING PIECES ************************************************************************************************************************/
@@ -242,39 +242,63 @@ public class MainLibrary : MonoBehaviour
                 continue;
             }
 
-            /*** LOADING IMAGE *********************************************************************************************************************/
-            bool isValid = true;
+            /*** LOADING IMAGE(S) ******************************************************************************************************************/
+            bool validBoard = true;
+            bool hasDefault = false;
 
-            try
-            {
-                Texture2D tmpTexture = new Texture2D(2, 2);
-                tmpTexture.LoadImage(File.ReadAllBytes(folder + "/icon.png"));
-                if (tmpTexture.width != 500 && tmpTexture.height != 500)
+            foreach (String filepath in Directory.GetFiles(folder)) {
+                if (filepath.EndsWith(".png"))
                 {
-                    isValid = false;
-                    importLog.Add("[ERROR] Piece image size is not valid. Atleast one of its sides must me 500 pixels in size.");
+                    try
+                    {
+                        Texture2D tmpTexture = new Texture2D(2, 2);
+                        Sprite tmpSprite = null;
+                        bool validImage = true;
+                        tmpTexture.LoadImage(File.ReadAllBytes(filepath));
+                        if (tmpTexture.width != 500 && tmpTexture.height != 500)
+                        {
+                            importLog.Add($"[WARNING] \"{filepath.Substring(folder.Length+1)}\" size is not valid. Atleast one of its sides must me 500 pixels in size.");
+                            validImage = false;
+                        }
+                        if (tmpTexture.width > 500 || tmpTexture.height > 500)
+                        {
+                            importLog.Add($"[WARNING] \"{filepath.Substring(folder.Length+1)}\" size is not valid. None of it's sides can be greater than 500 pixels in size.");
+                            validImage = false;
+                        }
+                        if (validImage)
+                        {
+                            tmpSprite = Sprite.Create(tmpTexture, new Rect(0.0f, 0.0f, tmpTexture.width, tmpTexture.height), new Vector2(0.5f, 0.5f));
+                            /*
+                            if (filepath.EndsWith("default.png"))
+                                hasDefault = true;
+                            */
+                            if (filepath.Substring(folder.Length + 1).Substring(0, filepath.Substring(folder.Length + 1).LastIndexOf('.')) == "default")
+                                hasDefault = true;
+                            newPiece.sprites.Add(filepath.Substring(folder.Length+1).Substring(0, filepath.Substring(folder.Length+1).LastIndexOf('.')), tmpSprite);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log($"Error: {e}");
+                        importLog.Add($"[ERROR] An error occurred while loading \"{filepath.Substring(folder.Length+1)}\".");
+                    }
                 }
-                if (tmpTexture.width > 500 || tmpTexture.height > 500)
-                {
-                    isValid = false;
-                    importLog.Add("[ERROR] Piece image size is not valid. None of it's sides can be greater than 500 pixels in size.");
-                }
-                newPiece.image = Sprite.Create(tmpTexture, new Rect(0.0f, 0.0f, tmpTexture.width, tmpTexture.height), new Vector2(0.5f, 0.5f));
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-                isValid = false;
-                importLog.Add("[ERROR] Could not load icon.png. Check that the file does exists and it is spelled correctly. Remember it is case sensitive.");
             }
 
             /*** PIECE CHECKING ********************************************************************************************************************/
+
+            // Has default image?
+            if (!hasDefault)
+            {
+                importLog.Add("[ERROR] There is no valid \"default.png\" image. Remember that the name is case sensitive.");
+                validBoard = false;
+            }
 
             // ID is empty?
             if (newID.Length == 0) 
             {
                 importLog.Add("[ERROR] The ID cannot be empty.");
-                isValid = false;
+                validBoard = false;
             }
 
             // ID in use?
@@ -283,34 +307,34 @@ public class MainLibrary : MonoBehaviour
                 PieceElement otherPiece;
                 pieceLibrary.TryGetValue(newID, out otherPiece);
                 importLog.Add("[ERROR] The ID \"" + newID + "\" is already used by the piece with the name \"" + otherPiece.name + "\".");
-                isValid = false;
+                validBoard = false;
             }
 
             // Has a name?
             if (newPiece.name.Length == 0)
             {
                 importLog.Add("[ERROR] The name cannot be empty.");
-                isValid = false;
+                validBoard = false;
             }
 
             // Valid BoardType?
             if (newPiece.boardType == BoardType.NULL) 
             {
                 importLog.Add("[ERROR] The boardType is invalid. Remember it is case sensitive.");
-                isValid = false;
+                validBoard = false;
             }
 
             // Has moves?
             if (newPiece.moves.Count == 0) 
             {
                 importLog.Add("[ERROR] No moves were saved.");
-                isValid = false;
+                validBoard = false;
             }
 
             /*** SAVING PIECE **********************************************************************************************************************/
 
             // ALL OK
-            if (isValid) 
+            if (validBoard) 
             {
                 pieceLibrary.Add(newID, newPiece);
                 importLog.Add("[INFO] Piece added to the library successfully.");
@@ -447,7 +471,7 @@ public class MainLibrary : MonoBehaviour
                                 }
                                 catch (Exception e)
                                 {
-                                    importLog.Add("[WARNING] Player color is formated incorrectly.");
+                                    importLog.Add("[WARNING] A player's color is formated incorrectly.");
                                     continue;
                                 }
 
@@ -467,12 +491,54 @@ public class MainLibrary : MonoBehaviour
                                 }
                                 break;
 
+                            // INTERFACE COLOR //////////////////////////////////////////////////////////////////////////////////////////////////////
+                            case "interfacecolor":
+                                try
+                                {
+                                    int
+                                        r = int.Parse(playerInfo.InnerText.Substring(0, playerInfo.InnerText.IndexOf(','))),
+                                        g = int.Parse(playerInfo.InnerText.Substring(playerInfo.InnerText.IndexOf(',') + 1, playerInfo.InnerText.LastIndexOf(',') - playerInfo.InnerText.IndexOf(',') - 1)),
+                                        b = int.Parse(playerInfo.InnerText.Substring(playerInfo.InnerText.LastIndexOf(',') + 1));
+                                    newPlayer.interfaceColor = new Color(r / 255.0f, g / 255.0f, b / 255.0f);
+                                }
+                                catch
+                                {
+                                    importLog.Add("[WARNING] A player's interfacecolor is formated incorrectly.");
+                                    continue;
+                                }
+                                break;
+
+                            // IMAGE VARIANT ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            case "imagevariant":
+                                try
+                                {
+                                    newPlayer.pieceVariant = playerInfo.InnerText;
+                                }
+                                catch
+                                {
+                                    importLog.Add("[WARNING] An error occurred while reading the imagevariant of a player.");
+                                    continue;
+                                }
+                                break;
+
                             // ERROR ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                             default:
                                 importLog.Add("[WARNING] \"" + playerInfo.Name + "\" is not a valid entry for a player.");
                                 continue;
                         }
                     }
+                    // Fill optional info
+                    if (newPlayer.interfaceColor == null)
+                    {
+                        importLog.Add("[INFO] Couldn't find an interfacecolor value for a player. Defaulting to the same as color.");
+                        newPlayer.interfaceColor = newPlayer.color;
+                    }
+                    if (newPlayer.pieceVariant == null)
+                    {
+                        importLog.Add("[INFO] Couldn't find a piecevariant value for a player. Defaulting to \"default\".");
+                        newPlayer.pieceVariant = "default";
+                    }
+
 
                     // Check all info is on place
                     if (newPlayer.direction == null)
@@ -754,7 +820,7 @@ public class MainLibrary : MonoBehaviour
                         init.board = new string[initialPosition.Count][];
                         for (int i = 0; i < initialPosition.Count; i++)
                             init.board[i] = initialPosition[i].ToArray();
-                        newBoard.initialState = init;
+                        newBoard.board = init;
                         break;
                 }
                 if (failed)
@@ -767,7 +833,115 @@ public class MainLibrary : MonoBehaviour
                 importLog.Add("[ERROR] Could not find a \"position\" element in the file. Skipping board.");
                 continue;
             }
-           
+
+            /*** LOADING CUSTOM COLORS *************************************************************************************************************/
+            try
+            {
+                XmlNodeList customcolors = board.GetElementsByTagName("customcolors")[0].ChildNodes;
+                bool failedboard = false;
+                foreach(XmlNode list in customcolors)
+                {
+                    switch (list.Name)
+                    {
+                        case "colorlist":
+                            foreach (XmlNode colorNode in list.ChildNodes)
+                            {
+                                if (colorNode.Name == "color")
+                                {
+                                    int
+                                        r = int.Parse(colorNode.InnerText.Substring(0, colorNode.InnerText.IndexOf(','))),
+                                        g = int.Parse(colorNode.InnerText.Substring(colorNode.InnerText.IndexOf(',') + 1, colorNode.InnerText.LastIndexOf(',') - colorNode.InnerText.IndexOf(',') - 1)),
+                                        b = int.Parse(colorNode.InnerText.Substring(colorNode.InnerText.LastIndexOf(',') + 1));
+                                    newBoard.colorList.Add(new Color(r / 255.0f, g / 255.0f, b / 255.0f));
+                                }
+                                else
+                                {
+                                    importLog.Add("[WARNING] There's something insithe the color list that is not a color. Ignoring.");
+                                    continue;
+                                }
+                            }
+                            break;
+                        case "board":
+                            if (newBoard.colorList.Count == 0)
+                            {
+                                importLog.Add("[ERROR] In the customcolor element, there must be a colorlist element and must be placed before the board element to be able to use it. Skipping board.");
+                                failedboard = true;
+                                break;
+                            }
+                            newBoard.hasCustomColorPlacement = true;
+                            switch (newBoard.boardType)
+                            {
+                                case BoardType.Square2D:
+                                    List<string> rowStrings = new List<string>();
+                                    foreach(XmlNode row in list.ChildNodes)
+                                    {
+                                        if (row.Name == "row")
+                                            rowStrings.Add(row.InnerText);
+                                        else
+                                        {
+                                            importLog.Add("[ERROR] There is something in the customcolor board that is not a row. Skipping board.");
+                                            failedboard = true;
+                                            break;
+                                        }
+                                    }
+                                    if (failedboard)
+                                        break;
+                                    ((BoardSquare2D)newBoard.board).colors = new int[rowStrings.Count][];
+                                    for (int i = 0; i < rowStrings.Count; i++)
+                                    {
+                                        try
+                                        {
+                                            string auxstring = rowStrings[i];
+                                            List<int> auxlist = new List<int>();
+                                            for (int j = 0; auxstring.Contains(','); j++)
+                                            {
+                                                auxlist.Add(int.Parse(auxstring.Substring(0, auxstring.IndexOf(','))));
+                                                auxstring = auxstring.Substring(auxstring.IndexOf(',') + 1);
+                                            }
+                                            auxlist.Add(int.Parse(auxstring));
+                                            ((BoardSquare2D)newBoard.board).colors[i] = auxlist.ToArray();
+                                        }
+                                        catch
+                                        {
+                                            importLog.Add("[ERROR] The customcolor board is formated incorrectly. Skipping board.");
+                                            failedboard = true;
+                                            break;
+                                        }
+                                    }
+                                    int sizecheck = ((BoardSquare2D)newBoard.board).colors[0].Length;
+                                    foreach (int[] aux in ((BoardSquare2D)newBoard.board).colors)
+                                    {
+                                        if (aux.Length != sizecheck)
+                                        {
+                                            importLog.Add("[ERROR] Row size in customcolor board is inconsistent. Skipping board.");
+                                            failedboard = true;
+                                            break;
+                                        }
+                                        else
+                                            foreach (int value in aux)
+                                                if (value <= 0)
+                                                {
+                                                    importLog.Add("[ERROR] A value in the customcolor board is invalid. Skipping board.");
+                                                    failedboard = true;
+                                                    break;
+                                                }
+                                    }
+                                    break;
+                            }
+
+                            break;
+                        default:
+                            importLog.Add($"[ERROR] \"{list.Name}\" is not a valid entry inside \"customcolors\". Ignoring.");
+                            break;
+                    }
+                }
+                if (failedboard) continue;
+            }
+            catch
+            {
+                importLog.Add("[WARNING] An error occourred while loading the custom colors. Maybe does not exist? Ignoring.");
+            }
+
             /*** LOADING SPECIALS ******************************************************************************************************************/
             try
             {

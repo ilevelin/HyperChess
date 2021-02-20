@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PieceElement
 {
-    public Sprite image;
+    public Dictionary<string,Sprite> sprites;
 
     public string name;
     public string version;
@@ -15,5 +15,6 @@ public class PieceElement
     public PieceElement()
     {
         moves = new List<Move>();
+        sprites = new Dictionary<string, Sprite>();
     }
 }

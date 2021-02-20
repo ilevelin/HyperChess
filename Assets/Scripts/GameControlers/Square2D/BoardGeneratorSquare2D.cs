@@ -10,14 +10,18 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     private MainLibrary mainLibrary;
     private LoadGameData gameData;
     [SerializeField] GameObject boardParent, gameCamera, cellPrefab, boardInputDetector, boardCoordinator, samplePiece, playerInterface;
-    [SerializeField] Color cellFirstColor, cellSecondColor;
+    [SerializeField] List<Color> defaultColors;
+    private List<Color> colorList;
+    public List<string> playerSpriteVariations;
+    private bool hasCustomColorPlacement;
+    private int[][] customColorPlacement;
     List<Tuple<char, string, int>> importList;
     string[][] board;
     public List<PlayerInfo> playerList = new List<PlayerInfo>();
     public List<int> playerDirections = new List<int>();
 
     public Dictionary<char, List<Move>> pieces = new Dictionary<char, List<Move>>();
-    public Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
+    public Dictionary<char, Dictionary<string, Sprite>> sprites = new Dictionary<char, Dictionary<string, Sprite>>();
     public Dictionary<char, int> values = new Dictionary<char, int>();
     public Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
 
@@ -60,12 +64,12 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     boardToLoad.pieceIDs.TryGetValue(character, out pieceImport);
                     mainLibrary.pieceLibrary.TryGetValue(pieceImport.ID, out pieceElement);
                     values.Add(character, pieceImport.value);
-                    sprites.Add(character, pieceElement.image);
+                    sprites.Add(character, pieceElement.sprites);
                     pieces.Add(character, pieceElement.moves);
                     types.Add(character, pieceImport.type);
                 }
 
-                board = ((BoardSquare2D)boardToLoad.initialState).board;
+                board = ((BoardSquare2D)boardToLoad.board).board;
 
                 for (int i = 0; i < boardToLoad.players.Count; i++)
                 {
@@ -75,9 +79,20 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                         boardToLoad.players[i].color ?? default(Color),
                         boardToLoad.players[i].team ?? (100 + i)
                         ));
+                    playerSpriteVariations.Add(boardToLoad.players[i].pieceVariant);
                     playerDirections.Add(boardToLoad.players[i].direction ?? 1);
                     boardCoordinator.GetComponent<BoardCoordinatorSquare2D>().promotionCells.Add(new List<int[]>());
                 }
+
+                if (boardToLoad.colorList.Count != 0)
+                {
+                    colorList = boardToLoad.colorList;
+                    hasCustomColorPlacement = boardToLoad.hasCustomColorPlacement;
+                    if (hasCustomColorPlacement)
+                        customColorPlacement = ((BoardSquare2D)boardToLoad.board).colors;
+                }
+                else
+                    colorList = defaultColors;
             }
         }
         catch (Exception e)
@@ -131,8 +146,10 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 {
                     GameObject tmp = GameObject.Instantiate(cellPrefab, new Vector3(i, j, 0), new Quaternion(0, 0, 0, 0), boardParent.transform);
 
-                    if (((i + j) % 2) != 0) tmp.GetComponent<SpriteRenderer>().color = cellFirstColor;
-                    else tmp.GetComponent<SpriteRenderer>().color = cellSecondColor;
+                    if (hasCustomColorPlacement)
+                        tmp.GetComponent<SpriteRenderer>().color = colorList[customColorPlacement[boardHeight - 1 - j][i] - 1];
+                    else
+                        tmp.GetComponent<SpriteRenderer>().color = colorList[((i + j) % colorList.Count)];
 
                     tmp.GetComponent<CellInputDetector>().Initialize(boardInputDetector, new int[] { i, j });
 
@@ -180,11 +197,15 @@ public class BoardGeneratorSquare2D : MonoBehaviour
 
                 List<Move> pieceMoves;
                 int pieceValue;
-                Sprite pieceSprite;
+                Dictionary<string, Sprite> spriteList;
+                Sprite sprite;
                 PieceType pieceType;
                 pieces.TryGetValue(piece, out pieceMoves);
                 values.TryGetValue(piece, out pieceValue);
-                sprites.TryGetValue(piece, out pieceSprite);
+                sprites.TryGetValue(piece, out spriteList);
+                if (!spriteList.TryGetValue(playerSpriteVariations[player - 1], out sprite))
+                    if (!spriteList.TryGetValue("default", out sprite))
+                        Debug.Log("NO DEFAULT IMAGE????");
                 types.TryGetValue(piece, out pieceType);
 
                 newPiece.GetComponent<PieceSquare2D>().Initialize(
@@ -198,7 +219,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                     pieceValue,
                     piece,
                     pieceType,
-                    pieceSprite
+                    sprite
                     );
 
                 return newPiece.GetComponent<PieceSquare2D>();

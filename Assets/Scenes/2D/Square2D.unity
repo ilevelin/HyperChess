@@ -356,6 +356,9 @@ MonoBehaviour:
   playerInterface: {fileID: 1095034202}
   cellFirstColor: {r: 1, g: 1, b: 1, a: 1}
   cellSecondColor: {r: 0, g: 0, b: 0, a: 1}
+  defaultColors:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0, g: 0, b: 0, a: 1}
   playerDirections: 
 --- !u!4 &164829994
 Transform:

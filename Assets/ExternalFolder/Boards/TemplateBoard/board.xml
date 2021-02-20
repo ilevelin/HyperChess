@@ -10,7 +10,9 @@
     <player>
       <team></team>
       <color></color>
+      <interfacecolor></interfacecolor>
       <direction></direction>
+      <imagevariant></imagevariant>
     </player>
   </players>
 
@@ -26,6 +28,18 @@
     <row></row>
     <row></row>
   </position>
+
+  <customcolors>
+    <colorlist>
+      <color></color>
+      <color></color>
+    </colorlist>
+
+    <board>
+      <row></row>
+      <row></row>
+    </board>
+  </customcolors>
 
   <specials>
   </specials>

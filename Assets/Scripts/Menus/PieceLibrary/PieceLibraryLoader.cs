@@ -24,8 +24,10 @@ public class PieceLibraryLoader : MonoBehaviour
                 PieceElement element;
                 if (mainLibrary.pieceLibrary.TryGetValue(id, out element))
                 {
+                    Sprite image;
+                    element.sprites.TryGetValue("default", out image);
                     GameObject tmp = GameObject.Instantiate(libraryObjectPrefab, new Vector3(1.0f, -0.5f * i), new Quaternion(), libraryListParent.transform);
-                    tmp.GetComponent<PieceLibraryObject>().LoadPiece(id, element.image, element.name, element.version, element.author, coordinator);
+                    tmp.GetComponent<PieceLibraryObject>().LoadPiece(id, image, element.name, element.version, element.author, coordinator);
                     i++;
                 }
                 else Debug.Log($"FAILED TO LOAD: {i}");
