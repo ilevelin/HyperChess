@@ -91,8 +91,12 @@ public class PieceSquare2D : MonoBehaviour, Piece
                         {
                             for (int i = 1; i < Math.Abs(move.move[mayorAxis]) && !blocked; i++)
                             {
-                                int tmpX = i + position[0];
-                                int tmpY = i + position[1];
+                                int tmpX = position[0];
+                                int tmpY = position[1];
+
+                                if (mayorAxis == 0) tmpX += i * (move.move[mayorAxis] > 0 ? 1 : -1);
+                                else tmpY += i * (move.move[mayorAxis] > 0 ? 1 : -1);
+
                                 if (!(board[tmpX,tmpY] is null))
                                 {
                                     blocked = true;
@@ -288,8 +292,19 @@ public class PieceSquare2D : MonoBehaviour, Piece
     public List<int[]> GetAttacks(PieceSquare2D[,] board, bool[,] existingCells)
     {
         List<int[]> attacking = new List<int[]>();
-        foreach (Move move in moves)
+        foreach (Move baseMove in moves)
         {
+            Move move = new Move(new int[baseMove.move.Length], baseMove.style, baseMove.type);
+            for (int i = 0; i < baseMove.move.Length; i++)
+            {
+                int newindex = i + Math.Abs(direction) - 1;
+                if (newindex >= baseMove.move.Length) newindex -= baseMove.move.Length;
+                if (direction >= 0)
+                    move.move[newindex] = baseMove.move[i];
+                else
+                    move.move[newindex] = -baseMove.move[i];
+            }
+
             if (move.type == Type.MOVE) continue;
             int x = position[0] + move.move[0];
             int y = position[1] + move.move[1];
@@ -336,12 +351,10 @@ public class PieceSquare2D : MonoBehaviour, Piece
                             switch (move.type)
                             {
                                 case Type.BOTH:
-                                    if ((objectiveCell == null) || (objectiveCell.team != this.team))
-                                        attacking.Add(new int[] { x, y });
+                                    attacking.Add(new int[] { x, y });
                                     break;
                                 case Type.CAPTURE:
-                                    if (objectiveCell != null) if (objectiveCell.team != this.team)
-                                            attacking.Add(new int[] { x, y });
+                                    attacking.Add(new int[] { x, y });
                                     break;
                             }
                             break;
@@ -390,18 +403,13 @@ public class PieceSquare2D : MonoBehaviour, Piece
                                 switch (move.type)
                                 {
                                     case Type.BOTH:
-                                        if (objectiveCell == null)
-                                            attacking.Add(new int[] { x, y });
-                                        else if (objectiveCell.team != this.team)
-                                        {
-                                            attacking.Add(new int[] { x, y });
-                                            possible2 = false;
-                                        }
-                                        else
+                                        attacking.Add(new int[] { x, y });
+                                        if (objectiveCell != null)
                                             possible2 = false;
                                         break;
                                     case Type.CAPTURE:
-                                        if (objectiveCell != null) if (objectiveCell.team != this.team)
+                                        if (objectiveCell != null)
+                                            if (objectiveCell.team != this.team)
                                                 avaliableMoves.Add(new int[] { x, y });
                                             else
                                                 possible2 = false;
@@ -477,10 +485,10 @@ public class PieceSquare2D : MonoBehaviour, Piece
                         switch (move.type)
                         {
                             case Type.BOTH:
-                                if ((objectiveCell == null) || (objectiveCell.team != this.team)) attacking.Add(new int[] { x, y });
+                                attacking.Add(new int[] { x, y });
                                 break;
                             case Type.CAPTURE:
-                                if (objectiveCell != null) if (objectiveCell.team != this.team) attacking.Add(new int[] { x, y });
+                                attacking.Add(new int[] { x, y });
                                 break;
                         }
                         break;

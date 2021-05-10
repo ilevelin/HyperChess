@@ -8,12 +8,14 @@ public class PlayerInfoController : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI timer, playerName, advantage;
     [SerializeField] GameObject backgroundItem, backgroundItem2;
+    bool isInfinite = false;
 
-    public void Initialize(Color color, string name, int initTime)
+    public void Initialize(Color color, string name, int initTime, bool isInfinite)
     {
         playerName.text = name;
         playerName.color = color;
         advantage.color = color;
+        this.isInfinite = isInfinite;
         backgroundItem.GetComponent<Image>().color = color;
         backgroundItem2.GetComponent<Image>().color = color;
         UpdateTimer(initTime);
@@ -21,27 +23,35 @@ public class PlayerInfoController : MonoBehaviour
     
     public void UpdateTimer(int time)
     {
-        int h, m, s, ms, tmp;
-
-        h = time / 3600000;
-        tmp = time % 3600000;
-        m = tmp / 60000;
-        tmp = tmp % 60000;
-        s = tmp / 1000;
-        ms = tmp % 1000;
-
         string timeString = "";
-        if (h > 0)
+
+        if (!isInfinite)
         {
-            timeString = string.Format("{0}:{1:D2}:{2:D2}", h, m, s);
-        }
-        else if (m > 0)
-        {
-            timeString = string.Format("{0}:{1:D2}", m, s);
+            int h, m, s, ms, tmp;
+
+            h = time / 3600000;
+            tmp = time % 3600000;
+            m = tmp / 60000;
+            tmp = tmp % 60000;
+            s = tmp / 1000;
+            ms = tmp % 1000;
+
+            if (h > 0)
+            {
+                timeString = string.Format("{0}:{1:D2}:{2:D2}", h, m, s);
+            }
+            else if (m > 0)
+            {
+                timeString = string.Format("{0}:{1:D2}", m, s);
+            }
+            else
+            {
+                timeString = string.Format("{0}.{1:D3}", s, ms);
+            }
         }
         else
         {
-            timeString = string.Format("{0}.{1:D3}", s, ms);
+            timeString = "∞";
         }
 
         timer.text = timeString;

@@ -24,14 +24,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     public Dictionary<char, Dictionary<string, Sprite>> sprites = new Dictionary<char, Dictionary<string, Sprite>>();
     public Dictionary<char, int> values = new Dictionary<char, int>();
     public Dictionary<char, PieceType> types = new Dictionary<char, PieceType>();
-
-    /*
-    private void Update()
-    {
-        RecalculateCamera();
-    }
-    */
-
+    
     public void StartAfterCoordinator()
     {
         gameData = GameObject.FindGameObjectWithTag("LoadGameData").GetComponent<LoadGameData>();
@@ -74,9 +67,12 @@ public class BoardGeneratorSquare2D : MonoBehaviour
                 for (int i = 0; i < boardToLoad.players.Count; i++)
                 {
                     playerList.Add(new PlayerInfo(
-                        gameData.baseTimes[i], gameData.incements[i], gameData.delays[i],
+                        gameData.baseTimes[i],
+                        gameData.incements[i],
+                        gameData.delays[i],
                         gameData.playerNames[i],
                         boardToLoad.players[i].color ?? default(Color),
+                        boardToLoad.players[i].interfaceColor ?? default(Color),
                         boardToLoad.players[i].team ?? (100 + i)
                         ));
                     playerSpriteVariations.Add(boardToLoad.players[i].pieceVariant);
@@ -118,7 +114,7 @@ public class BoardGeneratorSquare2D : MonoBehaviour
     {
         int effectiveBoardWidth = (int)(boardWidth * (1f + (600f / (Screen.width - 600f))));
 
-        gameCamera.transform.position = new Vector3((effectiveBoardWidth / 2.0f) - 0.5f - ((effectiveBoardWidth * 600f) / ((Screen.width - 600f) * 2)), (boardHeight / 2.0f) - 0.5f, -10);
+        gameCamera.transform.position = new Vector3((effectiveBoardWidth / 2.0f) - 0.5f - ((effectiveBoardWidth * 750f) / ((Screen.width - 750f) * 2)), (boardHeight / 2.0f) - 0.5f, -10);
 
         float screenAspectRatio = (Screen.width * 1.0f) / Screen.height;
         float boardAspectRatio = (effectiveBoardWidth * 1.0f) / boardHeight;

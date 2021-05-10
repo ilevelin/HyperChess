@@ -10,7 +10,8 @@ public class PromotionController : MonoBehaviour
     [SerializeField] GameObject blurGameObject;
     [SerializeField] GameObject rowPrefab;
     [SerializeField] GameObject piecePrefab;
-    [SerializeField] RectTransform background;
+    [SerializeField] RectTransform backgoundImage;
+    [SerializeField] RectTransform promotionOptionsObject;
     [SerializeField] Sprite placeholderSprite;
     BoardCoordinator boardCoordinator;
     int counter = 0;
@@ -33,7 +34,8 @@ public class PromotionController : MonoBehaviour
         int w = piecesPerRow * squaresize;
         int h = rows * squaresize;
 
-        background.sizeDelta = new Vector2(w, h);
+        promotionOptionsObject.sizeDelta = new Vector2(w, h);
+        backgoundImage.sizeDelta = new Vector2(h, Screen.width);
 
         foreach (Transform child in rowContainer.transform)
             GameObject.Destroy(child.gameObject);
@@ -71,6 +73,7 @@ public class PromotionController : MonoBehaviour
     {
         rowContainer.SetActive(true);
         blurGameObject.SetActive(true);
+        backgoundImage.gameObject.SetActive(true);
         showing = true;
     }
 
@@ -78,6 +81,7 @@ public class PromotionController : MonoBehaviour
     {
         rowContainer.SetActive(false);
         blurGameObject.SetActive(false);
+        backgoundImage.gameObject.SetActive(false);
         showing = false;
     }
 

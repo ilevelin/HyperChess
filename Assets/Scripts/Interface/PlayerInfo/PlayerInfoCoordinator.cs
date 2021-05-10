@@ -10,6 +10,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
     List<PlayerInfoController> controllers = new List<PlayerInfoController>();
     public List<PlayerInfo> players = new List<PlayerInfo>();
     List<int> times = new List<int>();
+    List<bool> infiniteTimes = new List<bool>();
     BoardCoordinator boardCoordinator;
     public int turn { private set; get; } = 0;
     public int lastTurn { private set; get; }
@@ -25,31 +26,34 @@ public class PlayerInfoCoordinator : MonoBehaviour
 
     public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color, int team)
     {
-        if (players.Count == 0) delay = delayTime;
-        players.Add(new PlayerInfo(startingTime, incrementTime, delayTime, name, color, team));
-        times.Add(startingTime);
-        GameObject tmp = GameObject.Instantiate(playerInfoPrefab, new Vector3((Screen.width) / 2, (Screen.height)-(10 + (50 * controllers.Count))), new Quaternion(), transform);
-        controllers.Add(tmp.GetComponent<PlayerInfoController>());
-        controllers[controllers.Count - 1].Initialize(color, name, startingTime);
+        AddPlayer(startingTime, incrementTime, delay, name, color, color, team);
     }
 
     public void AddPlayer(int startingTime, int incrementTime, string name, Color color, int team)
     {
-        players.Add(new PlayerInfo(startingTime, incrementTime, 0, name, color, team));
-        times.Add(startingTime);
-        GameObject tmp = GameObject.Instantiate(playerInfoPrefab, new Vector3((Screen.width) / 2, (Screen.height) - (10 + (50 * controllers.Count))), new Quaternion(), transform);
-        controllers.Add(tmp.GetComponent<PlayerInfoController>());
-        controllers[controllers.Count - 1].Initialize(color, name, startingTime);
+        AddPlayer(startingTime, incrementTime, 0, name, color, color, team);
+    }
+
+    public void AddPlayer(int startingTime, int incrementTime, string name, Color color, Color interfaceColor, int team)
+    {
+        AddPlayer(startingTime, incrementTime, 0, name, color, interfaceColor, team);
+    }
+
+    public void AddPlayer(int startingTime, int incrementTime, int delayTime, string name, Color color, Color interfaceColor, int team)
+    {
+        AddPlayer(new PlayerInfo(startingTime, incrementTime, delayTime, name, color, interfaceColor, team));
     }
 
     public void AddPlayer(PlayerInfo player)
     {
+        bool isInfinite = player.startingTime == 0 && player.incrementTime == 0 && player.delayTime == 0;
         if (players.Count == 0) delay = player.delayTime;
         players.Add(player);
         times.Add(player.startingTime);
+        infiniteTimes.Add(isInfinite);
         GameObject tmp = GameObject.Instantiate(playerInfoPrefab, new Vector3((Screen.width) / 2, (Screen.height) - (10 + (50 * controllers.Count))), new Quaternion(), transform);
         controllers.Add(tmp.GetComponent<PlayerInfoController>());
-        controllers[controllers.Count - 1].Initialize(player.color, player.name, player.startingTime);
+        controllers[controllers.Count - 1].Initialize(player.interfaceColor, player.name, player.startingTime, isInfinite);
     }
 
     public void EliminatePlayer(int player)
@@ -86,6 +90,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
     void FixedUpdate()
     {
         if (!ready || !gameRunning) return;
+        if (infiniteTimes[turn]) return;
         if (players[turn].alive)
         {
             if (delay > 0)
@@ -118,7 +123,7 @@ public class PlayerInfoCoordinator : MonoBehaviour
     {
         if (!ready || !gameRunning) return;
         playerTurnArrow.transform.position = Vector3.Lerp(playerTurnArrow.transform.position, new Vector3(0, (Screen.height) - (10 + (50 * turn))), 0.1f);
-        playerTurnArrow.GetComponent<Image>().color = Color.Lerp(playerTurnArrow.GetComponent<Image>().color, players[turn].color, 0.1f);
+        playerTurnArrow.GetComponent<Image>().color = Color.Lerp(playerTurnArrow.GetComponent<Image>().color, players[turn].interfaceColor, 0.1f);
     }
 
     public void NextTurn(bool incrementLastPlayer)

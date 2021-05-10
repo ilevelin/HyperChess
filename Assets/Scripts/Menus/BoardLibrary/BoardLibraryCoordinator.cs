@@ -10,7 +10,9 @@ public class BoardLibraryCoordinator : MonoBehaviour
 {
     private string selectedElementID = null;
     private MainLibrary mainLibrary;
+    [SerializeField] private GameConfigurationCoordinator playerInfoCoordinator;
     [SerializeField] private Image boardImage;
+    [SerializeField] private GameObject placeholderText;
     [SerializeField] private TextMeshProUGUI boardTitle;
     [SerializeField] private GameObject gameDataPrefab;
     [SerializeField] private GameObject detailsTab;
@@ -31,6 +33,7 @@ public class BoardLibraryCoordinator : MonoBehaviour
 
     public void SelectElement(string elementID)
     {
+        placeholderText.SetActive(false);
         selectedElementID = elementID;
         BoardElement boardElement = GetSelectedElement();
         boardImage.sprite = boardElement.image;
@@ -59,30 +62,6 @@ public class BoardLibraryCoordinator : MonoBehaviour
 
     public void LaunchGame()
     {
-
-        List<string> names = new List<string>();
-        List<int> times = new List<int>();
-        List<int> increments = new List<int>();
-        List<int> delays = new List<int>();
-
-        // Temporal //
-        for (int i = 1; i <= GetSelectedElement().players.Count; i++)
-        {
-            names.Add($"JUGADOR-{i}");
-            times.Add(60000 * i);
-            increments.Add(1000 * i);
-            delays.Add(1000 * i);
-        }
-
-        GameObject tmp = GameObject.Instantiate(gameDataPrefab);
-        tmp.GetComponent<LoadGameData>().Initialize(
-            selectedElementID,
-            names,
-            times,
-            increments,
-            delays
-            );
-
-        mainLibrary.gameObject.GetComponent<SceneSwitcher>().LoadScene(GetSelectedElement().boardType);
+        playerInfoCoordinator.Show(selectedElementID);
     }
 }

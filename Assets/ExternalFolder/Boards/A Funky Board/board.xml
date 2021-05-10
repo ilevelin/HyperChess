@@ -1,0 +1,148 @@
+<board>
+  <metadata>
+    <name>A Funky Board</name>
+    <version>v1.0</version>
+    <author>José Manuel</author>
+    <boardType>Square2D</boardType>
+  </metadata>
+
+  <players>
+    <player>
+      <team>-</team>
+      <color>170,0,0</color>
+      <direction>1</direction>
+    </player>
+    <player>
+      <team>-</team>
+      <color>0,0,170</color>
+      <direction>-1</direction>
+      <imagevariant>UpsideDown</imagevariant>
+    </player>
+  </players>
+
+  <pieces>
+    <piece type="pawn">
+      <ID>classic.pawn</ID>
+      <value>1</value>
+      <char>P</char>
+    </piece>
+    <piece type="king">
+      <ID>classic.king</ID>
+      <value>99</value>
+      <char>K</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.knight</ID>
+      <value>3</value>
+      <char>N</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.bishop</ID>
+      <value>3</value>
+      <char>B</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.rook</ID>
+      <value>5</value>
+      <char>R</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>classic.queen</ID>
+      <value>9</value>
+      <char>Q</char>
+    </piece>
+    <piece type="upgrade">
+      <ID>ile.001</ID>
+      <value>7</value>
+      <char>A</char>
+    </piece>
+  </pieces>
+
+  <position>
+		<row>_,_,0:1,0:1,0:1,_,_</row>
+		<row>_,0:1,0,2K,0,0:1,_</row>
+		<row>0:1,2A,2R,2Q,2R,2A,0:1</row>
+		<row>2N,0,2N,_,2N,0,2N</row>
+		<row>2B,2B,_,_,_,2B,2B</row>
+		<row>0,0,_,_,_,0,0</row>
+		<row>2P,2P,2P,_,2P,2P,2P</row>
+		<row>0,0,0,0,0,0,0</row>
+		<row>0,0,0,0,0,0,0</row>
+		<row>0,0,0,0,0,0,0</row>
+		<row>1P,1P,1P,_,1P,1P,1P</row>
+		<row>0,0,_,_,_,0,0</row>
+		<row>1B,1B,_,_,_,1B,1B</row>
+		<row>1N,0,1N,_,1N,0,1N</row>
+		<row>0:2,1A,1R,1Q,1R,1A,0:2</row>
+		<row>_,0:2,0,1K,0,0:2,_</row>
+		<row>_,_,0:2,0:2,0:2,_,_</row>
+  </position>
+
+  <customcolors>
+    <colorlist>
+		<color>0,0,0</color>
+		<color>255,255,255</color>
+		<color>100,0,0</color>
+		<color>0,0,100</color>
+    </colorlist>
+
+    <board>
+		<row>1,1,3,3,3,1,1</row>
+		<row>1,3,2,1,2,3,1</row>
+		<row>3,2,1,2,1,2,3</row>
+		<row>2,1,2,1,2,1,2</row>
+		<row>1,2,1,1,1,2,1</row>
+		<row>2,1,1,1,1,1,2</row>
+		<row>1,2,1,1,1,2,1</row>
+		<row>2,1,2,1,2,1,2</row>
+		<row>1,2,1,2,1,2,1</row>
+		<row>2,1,2,1,2,1,2</row>
+		<row>1,2,1,1,1,2,1</row>
+		<row>2,1,1,1,1,1,2</row>
+		<row>1,2,1,1,1,2,1</row>
+		<row>2,1,2,1,2,1,2</row>
+		<row>4,2,1,2,1,2,4</row>
+		<row>1,4,2,1,2,4,1</row>
+		<row>1,1,4,4,4,1,1</row>
+    </board>
+  </customcolors>
+
+  <specials>
+	<move>
+		<check cell="11,3">ispieceP</check>
+		<check cell="11,3">isplayer1</check>
+		<check cell="14,3">isempty</check>
+		<movepiece>11,3-14,3</movepiece>
+	</move>
+	<move>
+		<check cell="10,4">ispieceP</check>
+		<check cell="10,4">isplayer1</check>
+		<check cell="15,4">isempty</check>
+		<movepiece>10,4-15,4</movepiece>
+	</move>
+	<move>
+		<check cell="11,5">ispieceP</check>
+		<check cell="11,5">isplayer1</check>
+		<check cell="14,5">isempty</check>
+		<movepiece>11,5-14,5</movepiece>
+	</move>
+	<move>
+		<check cell="7,3">ispieceP</check>
+		<check cell="7,3">isplayer2</check>
+		<check cell="4,3">isempty</check>
+		<movepiece>7,3-4,3</movepiece>
+	</move>
+	<move>
+		<check cell="8,4">ispieceP</check>
+		<check cell="8,4">isplayer2</check>
+		<check cell="3,4">isempty</check>
+		<movepiece>8,4-3,4</movepiece>
+	</move>
+	<move>
+		<check cell="7,5">ispieceP</check>
+		<check cell="7,5">isplayer2</check>
+		<check cell="4,5">isempty</check>
+		<movepiece>7,5-4,5</movepiece>
+	</move>
+  </specials>
+</board>

@@ -9,9 +9,9 @@ public class SceneSwitcher : MonoBehaviour
     {
         if (scene == GameScene.EXIT_PROGRAM)
         {
-            if (Application.isEditor)
+            /*if (Application.isEditor)
                 UnityEditor.EditorApplication.isPlaying = false;
-            else
+            else*/
                 Application.Quit();
         }
         SceneManager.LoadScene((int)scene);

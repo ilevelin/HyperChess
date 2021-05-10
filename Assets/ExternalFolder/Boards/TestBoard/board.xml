@@ -2,7 +2,7 @@
   <metadata>
     <name>MiniChess</name>
     <version>v1.0</version>
-    <author>ilevelin</author>
+    <author>José Manuel</author>
     <boardType>Square2D</boardType>
   </metadata>
 
@@ -11,12 +11,14 @@
       <team>1</team>
       <color>200,0,0</color>
       <direction>1</direction>
+      <interfacecolor>100,0,0</interfacecolor>
     </player>
     <player>
       <team>2</team>
       <color>0,0,200</color>
       <direction>-1</direction>
       <imagevariant>icon</imagevariant>
+      <interfacecolor>0,0,100</interfacecolor>
     </player>
   </players>
 

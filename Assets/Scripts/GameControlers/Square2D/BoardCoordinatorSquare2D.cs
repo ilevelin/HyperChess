@@ -8,6 +8,7 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 {
     [SerializeField] GameObject selectedCellObject, arrowMarkerPrefab, circleMarkerPrefab, playerInterface, boardGeneratorObject;
     [SerializeField] PromotionController promotionController;
+    [SerializeField] VictoryScreenCoordinator victoryScreen;
     PlayerInfoCoordinator turnCoordinator;
     BoardGeneratorSquare2D boardGenerator;
 
@@ -126,13 +127,6 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
 
     public void CheckMoves()
     {
-        try
-        {
-            Debug.Log($"===LAST MOVES===");
-            foreach (HistoryMove hmove in GetLastMoves())
-                Debug.Log($"P{hmove.player}: {hmove.from[0]},{hmove.from[1]}-{hmove.to[0]},{hmove.to[1]}");
-        } catch (Exception e) { Debug.Log(e); }
-
         List<int[]> attackedCells = new List<int[]>();
         for (int i = 0; i < board.GetLength(0); i++)
             for (int j = 0; j < board.GetLength(1); j++)
@@ -299,7 +293,12 @@ public class BoardCoordinatorSquare2D : MonoBehaviour, BoardCoordinator
                 winnerPlayers.Add(player);
 
         // Lanzar interfaz
-        Debug.Log($"HA GANADO EL EQUIPO {winnerTeam}");
+        if (winnerPlayers.Count == 1)
+            victoryScreen.EndGame(winnerPlayers[0].name);
+        else if (winnerPlayers.Count == 2)
+            victoryScreen.EndGame(winnerPlayers[0].name + " & " +winnerPlayers[1].name);
+        else
+            victoryScreen.EndGame("TEAM " + winnerTeam);
     }
 
 
